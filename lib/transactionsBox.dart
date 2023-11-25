@@ -18,11 +18,11 @@ class TransactionBox extends StatelessWidget {
           padding: EdgeInsets.all(10.0),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
-              color: Colors.white,
+              color: Color.fromRGBO(49, 54, 69, 1),
               boxShadow: [
                 BoxShadow(
-                    color: Colors.grey.shade200,
-                    blurRadius: 10.0),
+                    color: Colors.grey.shade900,
+                    blurRadius: 5.0),
               ]),
           height: 75,
           child:

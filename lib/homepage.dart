@@ -39,15 +39,15 @@ class _HomePageState extends State<HomePage> {
               label: "Home",
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.query_stats),
-              label: "Stats"
+              icon: Icon(Icons.note),
+              label: "Transactions"
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.money),
+              icon: Icon(Icons.account_balance),
               label: "Accounts"
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.more),
+              icon: Icon(Icons.more_horiz),
               label: "More"
           )
         ],

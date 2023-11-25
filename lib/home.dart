@@ -44,7 +44,7 @@ class Home extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Cashflow",
+              Text("Transactions",
                   style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
               Text("See more",
                   style: TextStyle(color: Colors.white24, fontSize:15, fontWeight: FontWeight.bold)),
