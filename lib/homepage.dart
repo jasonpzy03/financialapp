@@ -15,7 +15,7 @@ class _HomePageState extends State<HomePage> {
 
   final tabs = [
       Home(),
-      Transaction()
+      Transactions()
   ];
 
   @override

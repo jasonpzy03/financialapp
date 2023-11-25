@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../transactionsBox.dart';
 
-class Transaction extends StatelessWidget {
+class Transactions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
