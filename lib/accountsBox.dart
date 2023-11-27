@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
 
-class Account extends StatelessWidget {
+import 'model/account.dart';
 
-  final String accountName;
-  final String balance;
-  final String decimal;
-  final MaterialColor bgColor;
+class AccountBox extends StatelessWidget {
 
-  Account({required this.accountName, required this.balance, required this.decimal, required this.bgColor});
+  final AccountData account;
+  late String accountGroup;
+  late double amount;
+  late String name;
+  late String description;
+
+  AccountBox({required this.account}) {
+    this.accountGroup = account.accountGroup;
+    this.name = account.name;
+    this.description = account.description;
+    this.amount = account.amount;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,9 +23,10 @@ class Account extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: Container(
           padding: EdgeInsets.symmetric(horizontal: 25.0),
+          width: MediaQuery.sizeOf(context).width * 0.48,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
-            color: bgColor,
+            color: Colors.cyan,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -25,7 +34,7 @@ class Account extends StatelessWidget {
               SizedBox(
                   height: 30
               ),
-              Text(accountName,
+              Text(name,
                   style: TextStyle(color: Colors.white, fontSize:25, fontWeight: FontWeight.bold)),
               SizedBox(
                   height:15
@@ -39,10 +48,8 @@ class Account extends StatelessWidget {
                 children: [
                   Text("\$ ",
                       style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
-                  Text(balance,
+                  Text(amount.toString(),
                       style: TextStyle(color: Colors.white, fontSize:20, fontWeight: FontWeight.bold)),
-                  Text(decimal,
-                      style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
                 ],
               )
 

@@ -3,25 +3,20 @@ import 'package:ui_practice_1/db/budgetexpense.dart';
 import 'package:ui_practice_1/editTransactionPage.dart';
 import 'package:ui_practice_1/model/transaction.dart';
 import '../transactionsBox.dart';
+import 'accountsBox.dart';
+import 'model/account.dart';
 
-class TransactionsPage extends StatefulWidget {
-  const TransactionsPage({super.key});
+class AccountsPage extends StatefulWidget {
+  const AccountsPage({super.key});
 
   @override
-  State<TransactionsPage> createState() => _TransactionsPageState();
+  State<AccountsPage> createState() => _AccountsPageState();
 }
 
-class _TransactionsPageState extends State<TransactionsPage> {
-  late List<TransactionData> transactions;
+class _AccountsPageState extends State<AccountsPage> {
+  late List<AccountData> accounts;
+  late List<String> accountGroups;
   bool isLoading = false;
-
-  DateTime currentDate = DateTime.now();
-
-  late int selectedMonth = currentDate.month;
-  late int selectedYear = currentDate.year;
-  late double inflow;
-  late double outflow;
-  late double cashflow;
 
   @override
   void initState() {
@@ -40,43 +35,72 @@ class _TransactionsPageState extends State<TransactionsPage> {
   Future refreshTransactions() async {
     setState(() => isLoading = true);
 
-    transactions = await BudgetExpenseDatabase.instance.readAllTransactions(selectedMonth.toString(), selectedYear.toString());
-    inflow = (await BudgetExpenseDatabase.instance.getInflow(selectedMonth.toString(), selectedYear.toString()))? [0]['Inflow'] ?? 0.0;
-    outflow = (await BudgetExpenseDatabase.instance.getOutflow(selectedMonth.toString(), selectedYear.toString()))? [0]['Outflow'] ?? 0.0;
+    accounts = await BudgetExpenseDatabase.instance.readAllAccounts();
+    accountGroups = await BudgetExpenseDatabase.instance.readAvailableGroups();
 
-    cashflow = inflow - outflow;
     setState(() => isLoading = false);
   }
 
-  String monthIntToString(int month) {
-    switch (month) {
-      case 1:
-        return 'Jan';
-      case 2:
-        return 'Feb';
-      case 3:
-        return 'Mar';
-      case 4:
-        return 'Apr';
-      case 5:
-        return 'May';
-      case 6:
-        return 'June';
-      case 7:
-        return 'July';
-      case 8:
-        return 'Aug';
-      case 9:
-        return 'Sep';
-      case 10:
-        return 'Oct';
-      case 11:
-        return 'Nov';
-      case 12:
-        return 'Dec';
-      default:
-        return 'Invalid Month';
+  Widget generateGroupLists() {
+    List<Widget> widgets = [];
+    for (int i = 0; i < accountGroups.length; i++) {
+      widgets.add(
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(accountGroups[i],
+                style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
+            GestureDetector(
+              onTap: () {
+
+              },
+              child: Text("See more",
+                  style: TextStyle(color: Colors.white24, fontSize:15, fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
+      );
+      widgets.add(
+        SizedBox(
+            height: 40
+        )
+      );
+
+      List<AccountData> accountWithThisGroup = [];
+
+      for (int j = 0; j < accounts.length; j++) {
+
+        if (accounts[j].accountGroup == accountGroups[i]) {
+          accountWithThisGroup.add(accounts[j]);
+        }
+      }
+
+      widgets.add(
+        Container(
+          height: 160,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: accountWithThisGroup.length,
+            itemBuilder: (context, index) {
+              final account = accountWithThisGroup[index];
+
+              return AccountBox(account: account);
+            },
+            physics: BouncingScrollPhysics(),
+          ),
+        ),
+      );
+
+      widgets.add(
+          SizedBox(
+              height: 200
+          )
+      );
     }
+
+    return Wrap(
+      children: widgets,
+    );
   }
 
   @override
@@ -94,40 +118,17 @@ class _TransactionsPageState extends State<TransactionsPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("Transactions",
+                      Text("Accounts",
                           style: TextStyle(color: Colors.white, fontSize:30, fontWeight: FontWeight.bold)),
                       IconButton(onPressed: () {
-                        setState(() {
-                          selectedMonth -=1;
-                          if (selectedMonth <= 0) {
-                            selectedMonth = 12;
-                            selectedYear -= 1;
-                          }
-
-                          refreshTransactions();
-                        });
-
-                      }, icon: Icon(Icons.keyboard_arrow_left_sharp, color: Colors.white, size: 20,)),
-                      Text(monthIntToString(selectedMonth) + " " + selectedYear.toString(),
-                          style: TextStyle(color: Colors.white, fontSize:18, fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
-                      IconButton(onPressed: () {
-                        setState(() {
-                          selectedMonth +=1;
-                          if (selectedMonth > 12) {
-                            selectedMonth = 1;
-                            selectedYear += 1;
-                          }
-
-                          refreshTransactions();
-                        });
-                      }, icon: Icon(Icons.keyboard_arrow_right_sharp, color: Colors.white, size: 20,)),
+                        Navigator.pushNamed(context, '/accountDataPage');
+                      }, icon: Icon(Icons.add, color: Colors.white, size: 30,))
                     ],
-
                   ),
                   SizedBox(
-                      height: 10
+                      height: 20
                   ),
-                  Text("Cashflow",
+                  Text("Total Balance",
                       style: TextStyle(color: Colors.white24, fontSize:15, fontWeight: FontWeight.bold)),
                   SizedBox(
                       height:10
@@ -141,7 +142,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                       Container(
                         width: MediaQuery.sizeOf(context).width * 0.7,
                         height: 50,
-                        child: Text(cashflow.toString(),
+                        child: Text("0",
                             style: TextStyle(color: Colors.white, fontSize:45, fontWeight: FontWeight.bold)),
                       ),
                       SizedBox(
@@ -166,7 +167,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Inflow",
+                        Text("Assets",
                             style: TextStyle(color: Colors.white24, fontSize:15, fontWeight: FontWeight.bold)),
                         SizedBox(
                             height:15
@@ -176,7 +177,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                             Container(
                               width: MediaQuery.sizeOf(context).width * 0.2,
                               height: 20,
-                              child: Text("\$ " + inflow.toString(),
+                              child: Text("0",
                                   style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
                             ),
                           ],
@@ -195,7 +196,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Outflow",
+                        Text("Liabilities",
                             style: TextStyle(color: Colors.white24, fontSize:15, fontWeight: FontWeight.bold)),
                         SizedBox(
                             height:15
@@ -205,7 +206,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                             Container(
                               width: MediaQuery.sizeOf(context).width * 0.2,
                               height: 20,
-                              child: Text("\$ " + outflow.toString(),
+                              child: Text("0",
                                   style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
                             ),
                           ],
@@ -215,29 +216,15 @@ class _TransactionsPageState extends State<TransactionsPage> {
                 ),
               ],
             ),
+          SizedBox(
+              height: 20
+          ),
           Expanded(
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20.0),
-              child: ListView.builder(
-                itemCount: transactions.length,
-                physics: BouncingScrollPhysics(),
-                itemBuilder: (context, index) {
-                  final transaction = transactions[index];
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => TransactionEditPage(transaction: transaction),
-                        ));
-                      });
-                    },
-                      child: TransactionBox(transaction: transaction)
-                  );
-                }
-              ),
+            child: ListView(
+              physics: BouncingScrollPhysics(),
+              children: [generateGroupLists()],
             ),
           ),
-
         ],
       ),
     );

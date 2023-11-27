@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import '../accounts.dart';
+import '../accountsBox.dart';
 import 'package:ui_practice_1/db/budgetexpense.dart';
 import 'package:ui_practice_1/editTransactionPage.dart';
 import 'package:ui_practice_1/model/transaction.dart';
+
+import 'homepage.dart';
 
 class HomePageContent extends StatefulWidget {
   const HomePageContent({super.key});
@@ -85,8 +87,15 @@ class _HomePageContentState extends State<HomePageContent> {
             children: [
               Text("Transactions",
                   style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
-              Text("See more",
-                  style: TextStyle(color: Colors.white24, fontSize:15, fontWeight: FontWeight.bold)),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(
+                    builder: (context) => HomePage(1),
+                  ));
+                },
+                child: Text("See more",
+                    style: TextStyle(color: Colors.white24, fontSize:15, fontWeight: FontWeight.bold)),
+              ),
             ],
           ),
           SizedBox(
@@ -175,9 +184,7 @@ class _HomePageContentState extends State<HomePageContent> {
               physics: BouncingScrollPhysics(),
               scrollDirection: Axis.horizontal,
               children: [
-                Account(accountName: "Touch N Go", balance: "3,000", decimal: ".64", bgColor: Colors.cyan),
-                Account(accountName: "Versa Cash", balance: "20,000", decimal: ".94", bgColor: Colors.lightGreen),
-                Account(accountName: "ASNB", balance: "100,000", decimal: ".99", bgColor: Colors.blue),
+
               ],
             ),
           ),

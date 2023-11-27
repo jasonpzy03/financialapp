@@ -6,6 +6,8 @@ import '../homepage.dart';
 import '../transactionData.dart';
 import 'package:page_transition/page_transition.dart';
 
+import 'accountData.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -33,6 +35,13 @@ class MyApp extends StatelessWidget {
           case '/transactionDataPage':
             return PageTransition(
               child: TransactionDataPage(),
+              type: PageTransitionType.bottomToTop,
+              settings: settings,
+            );
+            break;
+          case '/accountDataPage':
+            return PageTransition(
+              child: AccountDataPage(),
               type: PageTransitionType.bottomToTop,
               settings: settings,
             );

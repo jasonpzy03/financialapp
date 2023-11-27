@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:ui_practice_1/accountspage.dart';
 import '../transactionspage.dart';
-import '../accounts.dart';
+import '../accountsBox.dart';
 import '../homepagecontent.dart';
 import 'package:ui_practice_1/db/budgetexpense.dart';
 import 'package:ui_practice_1/editTransactionPage.dart';
@@ -32,7 +33,8 @@ class _HomePageState extends State<HomePage> {
 
   final tabs = [
       HomePageContent(),
-      TransactionsPage()
+      TransactionsPage(),
+      AccountsPage(),
   ];
 
   @override
@@ -40,13 +42,13 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Color.fromRGBO(35, 38, 51, 1.0),
       body: tabs[_currentIndex],
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: _currentIndex < 2 ? FloatingActionButton(
           child: Icon(Icons.add),
           backgroundColor: Colors.blue,
           onPressed: () {
             Navigator.pushNamed(context, '/transactionDataPage');
           }
-      ),
+      ) : null,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         backgroundColor: Color.fromRGBO(38, 41, 59, 1.0),

@@ -1,5 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:ui_practice_1/accountsBox.dart';
+import '../model/account.dart';
 import '../model/transaction.dart';
 
 class BudgetExpenseDatabase {
@@ -25,7 +27,7 @@ class BudgetExpenseDatabase {
   }
 
   Future _createDB(Database db, int version) async {
-    print("creating db");
+
     const idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
     const textType = 'TEXT NOT NULL';
     const dateType = 'DATE NOT NULL';
@@ -42,9 +44,19 @@ class BudgetExpenseDatabase {
         ${TransactionFields.transactType} $textType
         )
 ''');
+
+    await db.execute('''
+      CREATE TABLE $tableAccounts ( 
+        ${AccountFields.id} $idType, 
+        ${AccountFields.accountGroup} $textType,
+        ${AccountFields.name} $textType,
+        ${AccountFields.amount} $doubleType,
+        ${AccountFields.description} $textType
+        )
+''');
   }
 
-  Future<TransactionData> create(TransactionData transactionData) async {
+  Future<TransactionData> createTransaction(TransactionData transactionData) async {
     final db = await instance.database;
 
     // final json = note.toJson();
@@ -57,6 +69,13 @@ class BudgetExpenseDatabase {
 
     final id = await db.insert(tableTransactions, transactionData.toJson());
     return transactionData.copy(id: id);
+  }
+
+  Future<AccountData> createAccount(AccountData accountData) async {
+    final db = await instance.database;
+
+    final id = await db.insert(tableAccounts, accountData.toJson());
+    return accountData.copy(id: id);
   }
 
   Future<TransactionData> readTransaction(int month) async {
@@ -93,6 +112,26 @@ class BudgetExpenseDatabase {
     return result.map((json) => TransactionData.fromJson(json)).toList();
   }
 
+  Future<List<AccountData>> readAllAccounts() async {
+    final db = await instance.database;
+
+    // final result =
+    //     await db.rawQuery('SELECT * FROM $tableNotes ORDER BY $orderBy');
+
+    final result = await db.query(tableAccounts);//, where: "${AccountFields.accountGroup} = ?", whereArgs:[group]);
+
+    return result.map((json) => AccountData.fromJson(json)).toList();
+  }
+
+  Future readAvailableGroups() async {
+    final db = await instance.database;
+
+    final result =
+    await db.rawQuery("SELECT DISTINCT ${AccountFields.accountGroup} FROM $tableAccounts");
+
+    return result.map((row) => row['accountGroup'].toString()).toList();
+  }
+
   Future getInflow(String month, String year) async {
     final db = await instance.database;
 
@@ -119,7 +158,7 @@ class BudgetExpenseDatabase {
     return result.toList();
   }
 
-  Future<int> update(TransactionData transactionData) async {
+  Future<int> updateTransaction(TransactionData transactionData) async {
     final db = await instance.database;
 
     return db.update(
@@ -130,12 +169,33 @@ class BudgetExpenseDatabase {
     );
   }
 
-  Future<int> delete(int id) async {
+  Future<int> updateAccount(AccountData accountData) async {
+    final db = await instance.database;
+
+    return db.update(
+      tableAccounts,
+      accountData.toJson(),
+      where: '${AccountFields.id} = ?',
+      whereArgs: [accountData.id],
+    );
+  }
+
+  Future<int> deleteTransaction(int id) async {
     final db = await instance.database;
 
     return await db.delete(
       tableTransactions,
       where: '${TransactionFields.id} = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<int> deleteAccount(int id) async {
+    final db = await instance.database;
+
+    return await db.delete(
+      tableAccounts,
+      where: '${AccountFields.id} = ?',
       whereArgs: [id],
     );
   }

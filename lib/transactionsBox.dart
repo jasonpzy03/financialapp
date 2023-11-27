@@ -73,6 +73,7 @@ class TransactionBox extends StatelessWidget {
                         width: 10
                       ),
                       Container(
+                        width: 150,
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -81,12 +82,16 @@ class TransactionBox extends StatelessWidget {
                                 height: 5,
                               ),
                               Text(category, style: TextStyle(color: Colors.white, fontSize:15)),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Text(account, style: TextStyle(color: Colors.grey, fontSize:15)),
                             ]
                         ),
                       ),
                     ],
                   ),
-                  Text(account, style: TextStyle(color: Colors.grey, fontSize:15, fontWeight: FontWeight.bold)),
+
                   Container(
                     width: 100,
                     child: Text((transactType == "Expense" ? "- " : "+ ") + "\$" + amount.toString(), style: TextStyle(color: (transactType == "Expense" ? Colors.red.shade300 :Colors.green.shade300), fontSize:20, fontWeight: FontWeight.bold), textAlign: TextAlign.right,),

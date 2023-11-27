@@ -514,7 +514,7 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                             amount: double.parse(_amount.text),
                             note: _note.text,
                             transactType: transactType);
-                        BudgetExpenseDatabase.instance.update(transaction);
+                        BudgetExpenseDatabase.instance.updateTransaction(transaction);
                         Navigator.push(context, MaterialPageRoute(
                           builder: (context) => HomePage(1),
                         ));
@@ -534,7 +534,7 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                 GestureDetector(
                     onTap: () {
                       setState(() {
-                        BudgetExpenseDatabase.instance.delete(id);
+                        BudgetExpenseDatabase.instance.deleteTransaction(id);
                         Navigator.push(context, MaterialPageRoute(
                           builder: (context) => HomePage(1),
                         ));

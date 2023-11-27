@@ -37,7 +37,7 @@ class _TransactionDataPageState extends State<TransactionDataPage> {
   Color underlineColor = Colors.red.shade300;
 
   Widget generateSelections() {
-    List<Widget> widgets = [];
+
     selections.clear();
     List<String> selectedCategory = expenseCategories;
     if (transactType == "Income") {
@@ -480,7 +480,7 @@ class _TransactionDataPageState extends State<TransactionDataPage> {
                         amount: double.parse(_amount.text),
                         note: _note.text,
                         transactType: transactType);
-                    BudgetExpenseDatabase.instance.create(transaction);
+                    BudgetExpenseDatabase.instance.createTransaction(transaction);
                     Navigator.push(context, MaterialPageRoute(
                       builder: (context) => HomePage(1),
                     ));
