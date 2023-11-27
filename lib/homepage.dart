@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
-import '../transactions.dart';
-import '../home.dart';
+import '../transactionspage.dart';
+import '../accounts.dart';
+import '../homepagecontent.dart';
+import 'package:ui_practice_1/db/budgetexpense.dart';
+import 'package:ui_practice_1/editTransactionPage.dart';
+import 'package:ui_practice_1/model/transaction.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+
+  int currentIndex = 0;
+
+  HomePage(currentIndex, {super.key}) {
+    this.currentIndex = currentIndex;
+  }
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -13,24 +22,34 @@ class _HomePageState extends State<HomePage> {
 
   int _currentIndex = 0;
 
+  @override
+  void initState() {
+    super.initState();
+
+    _currentIndex = widget.currentIndex;
+
+  }
+
   final tabs = [
-      Home(),
-      Transactions()
+      HomePageContent(),
+      TransactionsPage()
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(35, 38, 51, 100),
+      backgroundColor: Color.fromRGBO(35, 38, 51, 1.0),
       body: tabs[_currentIndex],
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
           backgroundColor: Colors.blue,
-          onPressed: null
+          onPressed: () {
+            Navigator.pushNamed(context, '/transactionDataPage');
+          }
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        backgroundColor: Color.fromRGBO(35, 38, 51, 100),
+        backgroundColor: Color.fromRGBO(38, 41, 59, 1.0),
         unselectedItemColor: Colors.grey[350],
         type: BottomNavigationBarType.fixed,
         items: [

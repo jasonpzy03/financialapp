@@ -1,14 +1,25 @@
 import 'package:flutter/material.dart';
+import '../model/transaction.dart';
+import 'package:intl/intl.dart';
 
 class TransactionBox extends StatelessWidget {
 
-  final String transactionName;
-  final String category;
-  final String date;
-  final String money;
-  final String expenseOrIncome;
+  final TransactionData transaction;
+  late String note;
+  late DateTime date;
+  late double amount;
+  late String account;
+  late String category;
+  late String transactType;
 
-  TransactionBox({required this.transactionName, required this.category, required this.date, required this.money, required this.expenseOrIncome});
+  TransactionBox({required this.transaction}) {
+    this.note = transaction.note;
+    this.date = transaction.date;
+    this.account = transaction.account;
+    this.amount = transaction.amount;
+    this.category = transaction.category;
+    this.transactType = transaction.transactType;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,9 +41,9 @@ class TransactionBox extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children:[
-                  Text("Today",
+                  Text(DateFormat('EEEE').format(date),
                       style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
-                  Text("23-11-2023",
+                  Text(DateFormat('yyyy-MM-dd').format(date),
                       style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
                 ]
 
@@ -65,7 +76,7 @@ class TransactionBox extends StatelessWidget {
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(transactionName, style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
+                              Text(note, style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
                               SizedBox(
                                 height: 5,
                               ),
@@ -75,8 +86,12 @@ class TransactionBox extends StatelessWidget {
                       ),
                     ],
                   ),
+                  Text(account, style: TextStyle(color: Colors.grey, fontSize:15, fontWeight: FontWeight.bold)),
+                  Container(
+                    width: 100,
+                    child: Text((transactType == "Expense" ? "- " : "+ ") + "\$" + amount.toString(), style: TextStyle(color: (transactType == "Expense" ? Colors.red.shade300 :Colors.green.shade300), fontSize:20, fontWeight: FontWeight.bold), textAlign: TextAlign.right,),
+                  )
 
-                  Text((expenseOrIncome == "expense" ? "- " : "+ ") + "\$" + money, style: TextStyle(color: (expenseOrIncome == "expense" ? Colors.red.shade300 :Colors.green.shade300), fontSize:20, fontWeight: FontWeight.bold)),
                 ],
               )
 
