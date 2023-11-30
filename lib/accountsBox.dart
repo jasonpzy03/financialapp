@@ -26,7 +26,7 @@ class AccountBox extends StatelessWidget {
           width: MediaQuery.sizeOf(context).width * 0.48,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
-            color: Colors.cyan,
+            color: amount < 0 ? Colors.red.shade300 : Colors.blue,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

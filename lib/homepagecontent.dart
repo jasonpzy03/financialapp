@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../accountsBox.dart';
 import 'package:ui_practice_1/db/budgetexpense.dart';
 import 'package:ui_practice_1/editTransactionPage.dart';
@@ -35,6 +36,13 @@ class _HomePageContentState extends State<HomePageContent> {
     super.initState();
 
     refreshTransactions();
+    initPrefs();
+  }
+
+  Future initPrefs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setStringList('expenseCategories', ["Food", "Transportation", "Entertainment", "Donation", "Sports"]);
+    prefs.setStringList('incomeCategories', ["Allowance", "Salary", "Bonus", "Petty Cash", "Other"]);
   }
 
   @override

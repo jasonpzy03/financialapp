@@ -8,7 +8,8 @@ import 'model/account.dart';
 
 class CategoryDataPage extends StatefulWidget {
   final String transactType;
-  const CategoryDataPage({required this.transactType, super.key});
+  final bool isDelete;
+  const CategoryDataPage({required this.isDelete, required this.transactType, super.key});
 
   @override
   _CategoryDataPageState createState() => _CategoryDataPageState();
@@ -25,6 +26,10 @@ class _CategoryDataPageState extends State<CategoryDataPage> {
 
   late String transactType;
 
+  late bool isDelete;
+  bool isVisible = false;
+  bool isLoading = false;
+
   @override
   void initState() {
     super.initState();
@@ -32,18 +37,73 @@ class _CategoryDataPageState extends State<CategoryDataPage> {
     initPrefs();
 
     transactType = widget.transactType;
+    isDelete = widget.isDelete;
   }
 
   Future initPrefs() async {
-    // Obtain shared preferences.
+    setState(() {
+      isLoading = true;
+    });
     prefs = await SharedPreferences.getInstance();
     expenseCategories = prefs.getStringList('expenseCategories') ?? [];
     incomeCategories = prefs.getStringList('incomeCategories') ?? [];
+    setState(() {
+      isLoading = false;
+    });
   }
+  List<Widget> selections = [];
+  Widget generateSelections() {
+
+    selections.clear();
+    List<String> selectedCategory = expenseCategories;
+    if (transactType == "Income") {
+      selectedCategory = incomeCategories;
+    }
+
+      for (int i = 0; i < selectedCategory.length; i++) {
+        selections.add(
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _name.text = selectedCategory[i];
+              });
+            },
+            child: Container(
+                width: MediaQuery.of(context).size.width * 0.33,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Color.fromRGBO(35, 38, 51, 1.0),
+                  border: Border.all(
+                    color: Colors.white10, // Border color
+                    width: 1.0, // Border width
+                  ),
+                ),
+                child:
+                Center(
+                  child: Text(selectedCategory[i],
+                      style: TextStyle(color: Colors.white, fontSize:15)),
+                )
+            ),
+          ),
+        );
+      }
+    return Expanded(
+      child: ListView(
+          padding: EdgeInsets.zero,
+          physics: BouncingScrollPhysics(),
+          children: [Wrap(
+
+              children: selections
+          ),]
+      ),
+    );
+  }
+    // Return the list of widgets
+
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return isLoading ? Center(child: const CircularProgressIndicator()) : Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Color.fromRGBO(35, 38, 51, 1.0),
       body: Column(
@@ -63,7 +123,7 @@ class _CategoryDataPageState extends State<CategoryDataPage> {
                   SizedBox(
                       width: 10
                   ),
-                  Text((transactType == "Expense" ? "Expense Category" : "Income Category"),
+                  Text((isDelete == true ? "Delete Category" : transactType == "Expense" ? "Expense Category" : "Income Category"),
                       style: TextStyle(color: Colors.white, fontSize:30, fontWeight: FontWeight.bold)),
                 ],
               ),
@@ -85,6 +145,7 @@ class _CategoryDataPageState extends State<CategoryDataPage> {
                     child: TextField(
                         controller: _name,
                         cursorColor: Colors.white,
+                        readOnly: (isDelete ? true: false),
                         style: TextStyle(color: Colors.white, fontSize:15),
                         decoration: InputDecoration(
                           enabledBorder: UnderlineInputBorder(
@@ -95,7 +156,13 @@ class _CategoryDataPageState extends State<CategoryDataPage> {
                             borderSide: BorderSide(
                                 color: Colors.blue,
                                 width: 2.0),),
+
                         ),
+                        onTap: () {
+                          setState(() {
+                            isVisible = true;
+                          });
+                        }
                     ),
                   ),
                 ],
@@ -106,12 +173,22 @@ class _CategoryDataPageState extends State<CategoryDataPage> {
               child: GestureDetector(
                 onTap: () {
                   setState(() async {
-                    if (transactType == "Expense") {
-                      expenseCategories.add(_name.text);
-                      await prefs.setStringList('expenseCategories', expenseCategories);
+                    if (isDelete) {
+                      if (transactType == "Expense") {
+                        expenseCategories.remove(_name.text);
+                        await prefs.setStringList('expenseCategories', expenseCategories);
+                      } else {
+                        incomeCategories.remove(_name.text);
+                        await prefs.setStringList('incomeCategories', incomeCategories);
+                      }
                     } else {
-                      incomeCategories.add(_name.text);
-                      await prefs.setStringList('incomeCategories', incomeCategories);
+                      if (transactType == "Expense") {
+                        expenseCategories.add(_name.text);
+                        await prefs.setStringList('expenseCategories', expenseCategories);
+                      } else {
+                        incomeCategories.add(_name.text);
+                        await prefs.setStringList('incomeCategories', incomeCategories);
+                      }
                     }
 
                     Navigator.push(context, MaterialPageRoute(
@@ -126,11 +203,37 @@ class _CategoryDataPageState extends State<CategoryDataPage> {
                       borderRadius: BorderRadius.circular(5),
                       color: Colors.blue,
                     ),
-                    child: Text("Add",
+                    child: Text((isDelete ? "Delete" : "Add"),
                       style: TextStyle(color: Colors.white, fontSize:20), textAlign: TextAlign.center,)
                 ),
               ),
             ),
+            isDelete ? Visibility(
+              visible: isVisible,
+              child: Column(
+                children: [
+                  Container(
+                      padding: EdgeInsets.symmetric(horizontal: 15.0),
+                      width: MediaQuery.of(context).size.width,
+                      color: Colors.grey,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [Text("Category",
+                          style: TextStyle(color: Colors.black, fontSize:15)),
+                          IconButton(iconSize: 20, onPressed: () {
+                              setState(() {
+                                isVisible = false;
+                              });
+                              }, icon: Icon(Icons.close))
+                          ],)
+                  ),
+                ],
+              ),
+            ) : SizedBox(),
+            Visibility(
+                visible: isVisible,
+                child: generateSelections()
+            )
           ]
       ),
     );

@@ -69,9 +69,11 @@ class _TransactionDataPageState extends State<TransactionDataPage> {
   }
 
   Future initPrefs() async {
+    setState(() => isLoading = true);
     prefs = await SharedPreferences.getInstance();
     expenseCategories = prefs.getStringList('expenseCategories') ?? [];
     incomeCategories = prefs.getStringList('incomeCategories') ?? [];
+    setState(() => isLoading = false);
   }
 
   Future getAccounts() async {
@@ -231,7 +233,7 @@ class _TransactionDataPageState extends State<TransactionDataPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return isLoading ? Center(child: const CircularProgressIndicator()) : Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Color.fromRGBO(35, 38, 51, 1.0),
       body: Column(
@@ -651,13 +653,20 @@ class _TransactionDataPageState extends State<TransactionDataPage> {
                             style: TextStyle(color: Colors.black, fontSize:15)),
                         Row(
                           children: [
+                            selecting == "Category" ? IconButton(iconSize: 20, onPressed: () {
+                              setState(() {
+                                Navigator.push(context, MaterialPageRoute(
+                                  builder: (context) => CategoryDataPage(isDelete: true, transactType : transactType),
+                                ));
+                              });
+                            }, icon: Icon(Icons.delete)) : SizedBox(),
                             IconButton(iconSize: 20, onPressed: () {
                               setState(() {
                                 if (selecting == "Accounts") {
                                   Navigator.pushNamed(context, '/accountDataPage');
                                 } else if (selecting == "Category") {
                                   Navigator.push(context, MaterialPageRoute(
-                                    builder: (context) => CategoryDataPage(transactType : transactType),
+                                    builder: (context) => CategoryDataPage(isDelete: false, transactType : transactType),
                                   ));
                                 }
                               });

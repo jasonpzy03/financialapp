@@ -87,7 +87,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          padding: EdgeInsets.only(top: 50.0, left: 30.0, right: 30.0),
+          padding: EdgeInsets.only(top: 60.0, left: 30.0, right: 30.0),
             child:
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -205,53 +205,58 @@ class _TransactionsPageState extends State<TransactionsPage> {
         SizedBox(
           height: 20
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton(onPressed: () {
-              setState(() {
-                selectedMonth -=1;
-                if (selectedMonth <= 0) {
-                  selectedMonth = 12;
-                  selectedYear -= 1;
-                }
-
-                refreshTransactions();
-              });
-
-            }, icon: Icon(Icons.keyboard_arrow_left_sharp, color: Colors.white, size: 20,)),
-            Text(monthIntToString(selectedMonth) + " " + selectedYear.toString(),
-              style: TextStyle(color: Colors.white, fontSize:25, fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
-            IconButton(onPressed: () {
-              setState(() {
-                selectedMonth +=1;
-                if (selectedMonth > 12) {
-                  selectedMonth = 1;
-                  selectedYear += 1;
-                }
-
-                refreshTransactions();
-              });
-            }, icon: Icon(Icons.keyboard_arrow_right_sharp, color: Colors.white, size: 20,)),
-          ],
-        ),
         Container(
-          padding: EdgeInsets.only(left: 30.0, right: 30.0),
+          padding: EdgeInsets.symmetric(horizontal: 30.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Budgets",
-                  style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
+              IconButton(onPressed: () {
+                setState(() {
+                  selectedMonth -=1;
+                  if (selectedMonth <= 0) {
+                    selectedMonth = 12;
+                    selectedYear -= 1;
+                  }
+
+                  refreshTransactions();
+                });
+
+              }, icon: Icon(Icons.keyboard_arrow_left_sharp, color: Colors.white, size: 20,)),
+              Text(monthIntToString(selectedMonth) + " " + selectedYear.toString(),
+                style: TextStyle(color: Colors.white, fontSize:25, fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
+              IconButton(onPressed: () {
+                setState(() {
+                  selectedMonth +=1;
+                  if (selectedMonth > 12) {
+                    selectedMonth = 1;
+                    selectedYear += 1;
+                  }
+
+                  refreshTransactions();
+                });
+              }, icon: Icon(Icons.keyboard_arrow_right_sharp, color: Colors.white, size: 20,)),
               GestureDetector(
                 onTap: () {
                   Navigator.pushNamed(context,'/budgetsPage');
                 },
-                child: Text("See more",
-                    style: TextStyle(color: Colors.white24, fontSize:15, fontWeight: FontWeight.bold)),
+                child: Container(
+                  padding: EdgeInsets.only(top: 10, bottom: 10, left: 25.0, right: 25.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: Colors.black,
+                    border: Border.all(
+                      color: Colors.white24, // Border color
+                      width: 1.5, // Border width
+                    ),
+                  ),
+                  child: Text("Budgets",
+                      style: TextStyle(color: Colors.white54, fontSize:15, fontWeight: FontWeight.bold)),
+                ),
               ),
             ],
           ),
         ),
+
         SizedBox(
             height: 20
         ),

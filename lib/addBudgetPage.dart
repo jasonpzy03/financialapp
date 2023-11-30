@@ -10,8 +10,13 @@ import 'model/account.dart';
 
 class AddBudgetPage extends StatefulWidget {
 
+  late String category;
+  late String budget;
 
-  const AddBudgetPage({super.key});
+  AddBudgetPage(String category, String budget, {super.key}) {
+    this.category = category;
+    this.budget = budget;
+  }
 
   @override
   _AddBudgetPageState createState() => _AddBudgetPageState();
@@ -30,12 +35,25 @@ class _AddBudgetPageState extends State<AddBudgetPage> {
 
   late SharedPreferences prefs;
   bool isVisible = false;
+  bool isUpdate = false;
   String selecting = "";
 
+  late String category;
+  late String budget;
 
   @override
   void initState() {
     super.initState();
+
+    category = widget.category;
+    budget = widget.budget;
+
+    _category.text = category;
+    _amount.text = budget;
+
+    if (category != "" && budget != "") {
+      isUpdate = true;
+    }
 
     initPrefs();
   }
@@ -49,8 +67,14 @@ class _AddBudgetPageState extends State<AddBudgetPage> {
   }
 
   Future initPrefs() async {
+    setState(() {
+      isLoading = true;
+    });
     prefs = await SharedPreferences.getInstance();
     categories = prefs.getStringList('expenseCategories') ?? [];
+    setState(() {
+      isLoading = false;
+    });
   }
 
   Widget generateSelections() {
@@ -152,7 +176,7 @@ class _AddBudgetPageState extends State<AddBudgetPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return isLoading ? Center(child: const CircularProgressIndicator()) : Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Color.fromRGBO(35, 38, 51, 1.0),
       body: Column(
@@ -170,7 +194,7 @@ class _AddBudgetPageState extends State<AddBudgetPage> {
                   SizedBox(
                       width: 10
                   ),
-                  Text("Update Budget",
+                  Text((isUpdate ? "Update Budget" : "Add Budget"),
                       style: TextStyle(color: Colors.white, fontSize:30, fontWeight: FontWeight.bold)),
                 ],
               ),
@@ -207,8 +231,10 @@ class _AddBudgetPageState extends State<AddBudgetPage> {
                         ),
                         onTap: () async {
                           setState(() {
-                            isVisible = true;
-                            selecting = "Category";
+                            if (!isUpdate) {
+                              isVisible = true;
+                              selecting = "Category";
+                            }
                           });
                         }
                     ),
@@ -258,24 +284,50 @@ class _AddBudgetPageState extends State<AddBudgetPage> {
             SizedBox(
                 height: 40
             ),
-            GestureDetector(
-              onTap: () {
-                if (_category.text != "" && _amount.text != "") {
-                  prefs.setString(_category.text, _amount.text);
-                }
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    if (_category.text != "" && _amount.text != "") {
+                      prefs.setString(_category.text, _amount.text);
+                    }
 
-                Navigator.pushNamed(context,'/budgetsPage');
-              },
-              child: Container(
-                  padding: EdgeInsets.all(10.0),
-                  width: MediaQuery.of(context).size.width * 0.5,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    color: Colors.blue,
+                    Navigator.pushNamed(context,'/budgetsPage');
+                  },
+                  child: Container(
+                      padding: EdgeInsets.all(10.0),
+                      width: MediaQuery.of(context).size.width * 0.35,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        color: Colors.blue,
+                      ),
+                      child: Text((isUpdate ? "Update" : "Add"),
+                        style: TextStyle(color: Colors.white, fontSize:20), textAlign: TextAlign.center,)
                   ),
-                  child: Text("Update",
-                    style: TextStyle(color: Colors.white, fontSize:20), textAlign: TextAlign.center,)
-              ),
+                ),
+                SizedBox(
+                  width: 20
+                ),
+                isUpdate ? GestureDetector(
+                  onTap: () {
+                    prefs.remove(_category.text);
+                    Navigator.pushNamed(context,'/budgetsPage');
+                  },
+                  child: Container(
+                      padding: EdgeInsets.all(10.0),
+                      width: MediaQuery.of(context).size.width * 0.35,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        color: Colors.grey,
+                      ),
+                      child: Text("Delete",
+                        style: TextStyle(color: Colors.white, fontSize:20), textAlign: TextAlign.center,)
+                  ),
+                ) : SizedBox(
+                    height: 0
+                )
+              ],
             ),
             SizedBox(
                 height: 40

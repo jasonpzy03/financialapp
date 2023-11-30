@@ -137,7 +137,7 @@ class _BudgetsPageState extends State<BudgetsPage> {
                     child: IconButton(onPressed: () {
                       setState(() {
                         Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => AddBudgetPage(),
+                          builder: (context) => AddBudgetPage("", ""),
                         ));
                       });
                     }, icon: Icon(Icons.add_alert, color: Colors.white,)),
@@ -191,83 +191,92 @@ class _BudgetsPageState extends State<BudgetsPage> {
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.only(left: 30.0, right: 30.0, top: 20.0),
-                      child: Container(
-                          padding: EdgeInsets.all(20.0),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              color: Color.fromRGBO(49, 54, 69, 1),
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.grey.shade900,
-                                    blurRadius: 5.0),
-                              ]),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                width: 80,
-                                child:
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(budgets[index].key,
-                                        style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
-                                    SizedBox(
-                                        height: 10
-                                    ),
-                                    Text("\$ " + (budgets[index].value ?? "0"),
-                                        style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
-                                  ],
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            Navigator.push(context, MaterialPageRoute(
+                              builder: (context) => AddBudgetPage(budgets[index].key, budgets[index].value ?? "0"),
+                            ));
+                          });
+                        },
+                        child: Container(
+                            padding: EdgeInsets.all(20.0),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                color: Color.fromRGBO(49, 54, 69, 1),
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.grey.shade900,
+                                      blurRadius: 5.0),
+                                ]),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  width: 80,
+                                  child:
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(budgets[index].key,
+                                          style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
+                                      SizedBox(
+                                          height: 10
+                                      ),
+                                      Text("\$ " + (budgets[index].value ?? "0"),
+                                          style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              Container(
-                                width: 200,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Stack(
-                                      alignment: AlignmentDirectional.centerEnd,
-                                      children: [
-                                        LinearProgressIndicator(
-                                        value: (totalExpense[index].value / double.parse(budgets[index].value ?? "0")),
-                                        minHeight: 25,
-                                        borderRadius: BorderRadius.circular(15),
-                                        backgroundColor: Colors.black,
-                                        valueColor: ((totalExpense[index].value / double.parse(budgets[index].value ?? "0")) >= 1 ? AlwaysStoppedAnimation<Color>(Colors.red.shade300) : AlwaysStoppedAnimation<Color>(Colors.blue)),
+                                Container(
+                                  width: 200,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Stack(
+                                        alignment: AlignmentDirectional.centerEnd,
+                                        children: [
+                                          LinearProgressIndicator(
+                                          value: (totalExpense[index].value / double.parse(budgets[index].value ?? "0")),
+                                          minHeight: 25,
+                                          borderRadius: BorderRadius.circular(15),
+                                          backgroundColor: Colors.black,
+                                          valueColor: ((totalExpense[index].value / double.parse(budgets[index].value ?? "0")) >= 1 ? AlwaysStoppedAnimation<Color>(Colors.red.shade300) : AlwaysStoppedAnimation<Color>(Colors.blue)),
+                                        ),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.end,
+                                          children: [
+                                            Container(
+                                              width: 100,
+                                              child: Text(((totalExpense[index].value / double.parse(budgets[index].value ?? "0")) * 100).toStringAsFixed(2) + "%"
+                                                    ,style: TextStyle(color: Colors.white, fontSize:15), textAlign: TextAlign.right,),
+                                            ),
+                                            SizedBox(
+                                                width:20
+                                            )
+                                          ],
+                                        ),
+
+                                        ]
+                                      ),
+                                      SizedBox(
+                                        height: 10,
                                       ),
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Container(
-                                            width: 100,
-                                            child: Text(((totalExpense[index].value / double.parse(budgets[index].value ?? "0")) * 100).toStringAsFixed(2) + "%"
-                                                  ,style: TextStyle(color: Colors.white, fontSize:15), textAlign: TextAlign.right,),
-                                          ),
-                                          SizedBox(
-                                              width:20
-                                          )
+                                          Text("\$ " + (totalExpense[index].value).toStringAsFixed(2)
+                                                ,style: TextStyle(color: Colors.white, fontSize:15)),
+                                          Text(((double.parse(budgets[index].value ?? "0") - totalExpense[index].value) < 0 ? "Excess " : "") + "\$ " + (double.parse(budgets[index].value ?? "0") - totalExpense[index].value).toStringAsFixed(2),
+                                          style: TextStyle(color: Colors.white, fontSize:15)),
                                         ],
-                                      ),
-
-                                      ]
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text("\$ " + (totalExpense[index].value).toStringAsFixed(2)
-                                              ,style: TextStyle(color: Colors.white, fontSize:15)),
-                                        Text(((double.parse(budgets[index].value ?? "0") - totalExpense[index].value) < 0 ? "Excess " : "") + "\$ " + (double.parse(budgets[index].value ?? "0") - totalExpense[index].value).toStringAsFixed(2),
-                                        style: TextStyle(color: Colors.white, fontSize:15)),
-                                      ],
-                                    )
-                                  ],
+                                      )
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          )
+                              ],
+                            )
+                        ),
                       ),
                     );
                   }
