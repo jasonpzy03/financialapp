@@ -242,10 +242,10 @@ class _TransactionsPageState extends State<TransactionsPage> {
                 child: Container(
                   padding: EdgeInsets.only(top: 10, bottom: 10, left: 25.0, right: 25.0),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(15),
+                    color: Colors.grey[800],
                     border: Border.all(
-                      color: Colors.white24, // Border color
+                      color: Colors.white10, // Border color
                       width: 1.5, // Border width
                     ),
                   ),
@@ -260,7 +260,8 @@ class _TransactionsPageState extends State<TransactionsPage> {
         SizedBox(
             height: 20
         ),
-        Expanded(
+        transactions.isEmpty ? Expanded(child: Center(child: Text("No transactions",
+            style: TextStyle(color: Colors.white24, fontSize:18)),)) : Expanded(
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 20.0),
             child: ListView.builder(

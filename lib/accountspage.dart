@@ -239,7 +239,8 @@ class _AccountsPageState extends State<AccountsPage> {
           SizedBox(
               height: 20
           ),
-          Expanded(
+          accounts.isEmpty ? Expanded(child: Center(child: Text("No accounts",
+              style: TextStyle(color: Colors.white24, fontSize:18)),)) : Expanded(
             child: ListView(
               physics: BouncingScrollPhysics(),
               children: [generateGroupLists()],

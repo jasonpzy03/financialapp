@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Color.fromRGBO(35, 38, 51, 1.0),
       body: tabs[_currentIndex],
-      floatingActionButton: _currentIndex < 3 ? FloatingActionButton(
+      floatingActionButton: _currentIndex < 3 && _currentIndex != 0 ? FloatingActionButton(
           child: Icon(Icons.add),
           backgroundColor: Colors.blue,
           onPressed: () {

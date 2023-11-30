@@ -297,7 +297,40 @@ class _HomePageContentState extends State<HomePageContent> {
           SizedBox(
               height: 20
           ),
-          Container(
+          accounts.isEmpty ? Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30.0),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (context) => HomePage(2),
+                ));
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 25.0),
+                width: MediaQuery.sizeOf(context).width * 0.48,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: Colors.black,
+                  border: Border.all(
+                    color: Colors.white24, // Border color
+                    width: 2, // Border width
+                  ),
+                ),
+                height: 160,
+                child:
+                Center(
+                    child:
+                    Text("+",
+                        style: TextStyle(
+                            color: Colors.white24,
+                            fontSize:50,
+                            fontWeight: FontWeight.bold)
+                    )
+                ),
+              ),
+            ),
+          )
+        : Container(
             padding: EdgeInsets.symmetric(horizontal: 30.0),
             height: 160,
             child: ListView.builder(
@@ -314,6 +347,30 @@ class _HomePageContentState extends State<HomePageContent> {
                     child: AccountBox(account: account));
               },
               physics: BouncingScrollPhysics(),
+            ),
+          ),
+          SizedBox(
+            height: 110
+          ),
+          Center(
+            child: GestureDetector(
+              onTap: () {
+
+                Navigator.pushNamed(context,'/statisticsPage');
+              },
+              child: Container(
+                padding: EdgeInsets.only(top: 10, bottom: 10, left: 25.0, right: 25.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.grey[800],
+                  border: Border.all(
+                    color: Colors.white10, // Border color
+                    width: 1.5, // Border width
+                  ),
+                ),
+                child: Text("View Statistics",
+                    style: TextStyle(color: Colors.white54, fontSize:20, fontWeight: FontWeight.bold)),
+              ),
             ),
           ),
         ],

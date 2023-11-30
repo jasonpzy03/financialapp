@@ -97,6 +97,20 @@ class BudgetExpenseDatabase {
     }
   }
 
+  Future getTransactionCategorySum(String transactType, String month, String year) async {
+    final db = await instance.database;
+
+    final result = await db.rawQuery("SELECT "
+        "${TransactionFields.category} AS category, "
+        "SUM(${TransactionFields.amount}) AS totalAmount "
+        "FROM $tableTransactions "
+        "WHERE strftime('%m', ${TransactionFields.date}) = '$month' "
+        "AND strftime('%Y', ${TransactionFields.date}) = '$year' AND ${TransactionFields.transactType} = '$transactType'"
+        "GROUP BY ${TransactionFields.category};");
+
+    return result.toList();
+  }
+
   Future<List<TransactionData>> readAllTransactions(String month, String year) async {
     final db = await instance.database;
 
