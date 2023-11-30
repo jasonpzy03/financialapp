@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ui_practice_1/homepage.dart';
 import '../db/budgetexpense.dart';
 import '../model/transaction.dart';
 import 'package:intl/intl.dart';
 import 'package:ui_practice_1/transactionspage.dart';
+
+import 'categoryData.dart';
+import 'model/account.dart';
 
 class TransactionEditPage extends StatefulWidget {
 
@@ -24,6 +28,8 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
   DateTime _dateTime = DateTime.now();
   TextEditingController _account = TextEditingController();
   TextEditingController _category = TextEditingController();
+  TextEditingController _from = TextEditingController();
+  TextEditingController _to = TextEditingController();
   TextEditingController _amount = TextEditingController();
   TextEditingController _note = TextEditingController();
   final FocusNode _firstFocusNode = FocusNode();
@@ -35,8 +41,9 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
   String transactType = 'Expense';
   bool isVisible = false;
   String selecting = "";
-  List<String> accounts = ["Touch N Go", "Versa Cash", "ASNB"];
-  List<String> categories = ["Food", "Sports", "Transportation", "Telco"];
+
+  late List<String> expenseCategories;
+  late List<String> incomeCategories;
   List<String> keyboard = ["1", "2", "3", "Backspace", "4", "5", "6", "", "7", "8", "9", "", "", "0", ".", "Done"];
   List<Widget> selections = [];
 
@@ -44,11 +51,20 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
 
   late int id;
   late DateTime date;
+  late int accountId;
+  late int toAccountId;
   late String account;
   late String category;
   late double amount;
   late String note;
   late String _transactType;
+
+  late Map<int?, AccountData> accounts;
+  late AccountData? selectedAccount;
+  late AccountData? fromAccount;
+  late AccountData? toAccount;
+
+  late SharedPreferences prefs;
 
   @override
   void initState() {
@@ -56,6 +72,8 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
 
     id = widget.transaction?.id ?? 0;
     date = widget.transaction?.date ?? DateTime.now();
+    accountId = widget.transaction?.accountId ?? 0;
+    toAccountId = widget.transaction?.toAccountId ?? 0;
     account = widget.transaction?.account ?? '';
     category = widget.transaction?.category ?? '';
     amount = widget.transaction?.amount ?? 0;
@@ -65,22 +83,56 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
     _date.text = DateFormat('yyyy-MM-dd').format(date) + " (" + DateFormat('EEEE').format(date) + ")";
     _account.text = account;
     _category.text = category;
+    _from.text = account;
+
     _amount.text = amount.toString();
     _note.text = note;
     transactType = _transactType;
 
+
+
+    getAccounts();
+    initPrefs();
+  }
+  bool isLoading = false;
+
+  @override
+  void dispose() {
+    BudgetExpenseDatabase.instance.close();
+
+    super.dispose();
+  }
+
+  Future initPrefs() async {
+    prefs = await SharedPreferences.getInstance();
+    expenseCategories = prefs.getStringList('expenseCategories') ?? [];
+    incomeCategories = prefs.getStringList('incomeCategories') ?? [];
+  }
+
+  Future getAccounts() async {
+    setState(() => isLoading = true);
+
+    accounts = await BudgetExpenseDatabase.instance.readAllAccountsMap();
+    selectedAccount = accounts[accountId];
+    fromAccount = accounts[accountId];
+    toAccount = accounts[toAccountId];
+    _to.text = accounts[toAccountId]?.name ?? "";
+    setState(() => isLoading = false);
   }
 
   Widget generateSelections() {
-    List<Widget> widgets = [];
     selections.clear();
+    List<String> selectedCategory = expenseCategories;
+    if (transactType == "Income") {
+      selectedCategory = incomeCategories;
+    }
     if (selecting == "Category") {
-      for (int i = 0; i < categories.length; i++) {
+      for (int i = 0; i < selectedCategory.length; i++) {
         selections.add(
           GestureDetector(
             onTap: () {
               setState(() {
-                _category.text = categories[i];
+                _category.text = selectedCategory[i];
                 selecting = "Amount";
                 FocusScope.of(context).requestFocus(_fourthFocusNode);
               });
@@ -97,22 +149,35 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                 ),
                 child:
                 Center(
-                  child: Text(categories[i],
+                  child: Text(selectedCategory[i],
                       style: TextStyle(color: Colors.white, fontSize:15)),
                 )
             ),
           ),
         );
       }
-    } else if (selecting == "Accounts") {
-      for (int i = 0; i < accounts.length; i++) {
+    } else if (selecting == "Accounts" || selecting == "From" || selecting == "To") {
+      for (var entry in accounts.entries) {
         selections.add(
           GestureDetector(
             onTap: () {
               setState(() {
-                _account.text = accounts[i];
-                selecting = "Category";
-                FocusScope.of(context).requestFocus(_thirdFocusNode);
+                if (selecting == "From") {
+                  _from.text = entry.value.name;
+                  fromAccount = entry.value;
+                  selecting = "To";
+                  FocusScope.of(context).requestFocus(_thirdFocusNode);
+                } else if (selecting == "To" ){
+                  _to.text = entry.value.name;
+                  toAccount = entry.value;
+                  FocusScope.of(context).requestFocus(_fourthFocusNode);
+                } else {
+                  selectedAccount = entry.value;
+                  _account.text = entry.value.name;
+                  selecting = "Category";
+                  FocusScope.of(context).requestFocus(_thirdFocusNode);
+                }
+
               });
             },
             child: Container(
@@ -127,7 +192,7 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                 ),
                 child:
                 Center(
-                  child: Text(accounts[i],
+                  child: Text(entry.value.name,
                       style: TextStyle(color: Colors.white, fontSize:15)),
                 )
             ),
@@ -187,9 +252,15 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
 
 
     // Return the list of widgets
-    return Wrap(
+    return Expanded(
+      child: ListView(
+          padding: EdgeInsets.zero,
+          physics: BouncingScrollPhysics(),
+          children: [Wrap(
 
-        children: selections
+              children: selections
+          ),]
+      ),
     );
   }
 
@@ -208,7 +279,9 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                   IconButton(
                       icon: Icon(Icons.arrow_back, color: Colors.white, size: 30),
                       onPressed: () {
-                        Navigator.pushNamed(context, '/home');
+                        Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => HomePage(1),
+                        ));
                       }
                   ),
                   SizedBox(
@@ -231,6 +304,7 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                     onTap: () {
                       setState(() {
                         transactType = "Income";
+                        _category.text = "";
                         underlineColor = Colors.blue;
                       });
                     },
@@ -252,6 +326,7 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                     onTap: () {
                       setState(() {
                         transactType = "Expense";
+                        _category.text = "";
                         underlineColor = Colors.red.shade300;
                       });
                     },
@@ -293,212 +368,231 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                 ],
               ),
             ),
+            Container(
+              height: 200,
+              child: Scrollbar(
+                thumbVisibility: true,
+                child: ListView(
+                  physics: BouncingScrollPhysics(),
+                  children: [
+                    Container(
+                      padding: EdgeInsets.only(left: 30.0, right: 30.0),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 100,
+                            child:
+                            Text("Date",
+                                style: TextStyle(color: Colors.white60, fontSize:15)),
+                          ),
+                          Expanded(
+                            child: TextField(
+                                controller: _date,
+                                focusNode: _firstFocusNode,
+                                cursorColor: Colors.white,
+                                readOnly: true,
+                                style: TextStyle(color: Colors.white, fontSize:15),
+                                decoration: InputDecoration(
+                                  enabledBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Colors.white10,
+                                        width: 2.0),),
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: underlineColor,
+                                        width: 2.0),),
+                                ),
+                                onTap: () async {
+                                  DateTime? pickedDate = await showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now(),
+                                      firstDate: DateTime(2000),
+                                      lastDate: DateTime(2100));
+
+                                  if (pickedDate != null) {
+                                    setState(() {
+                                      isVisible = false;
+                                      _dateTime = pickedDate;
+                                      _date.text = DateFormat('yyyy-MM-dd').format(pickedDate) + " (" + DateFormat('EEEE').format(pickedDate) + ")";
+                                      FocusScope.of(context).requestFocus(_secondFocusNode);
+                                    });
+                                  }
+                                }
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(left: 30.0, right: 30.0),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 100,
+                            child:
+                            Text((transactType == "Transfer" ? "From" : "Account"),
+                                style: TextStyle(color: Colors.white60, fontSize:15)),
+                          ),
+                          Expanded(
+                            child: TextField(
+                                controller: (transactType == "Transfer" ? _from : _account),
+                                focusNode: _secondFocusNode,
+                                cursorColor: Colors.white,
+                                readOnly: true,
+                                style: TextStyle(color: Colors.white, fontSize:15),
+                                decoration: InputDecoration(
+                                  enabledBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Colors.white10,
+                                        width: 2.0),),
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: underlineColor,
+                                        width: 2.0),),
+                                ),
+                                onTap: () async {
+                                  setState(() {
+                                    isVisible = true;
+                                    if (transactType == "Transfer") {
+                                      selecting = "From";
+                                    } else {
+                                      selecting = "Accounts";
+                                    }
+                                  });
+                                }
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(left: 30.0, right: 30.0),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 100,
+                            child:
+                            Text((transactType == "Transfer" ? "To" : "Category"),
+                                style: TextStyle(color: Colors.white60, fontSize:15)),
+                          ),
+                          Expanded(
+                            child: TextField(
+                                controller: (transactType == "Transfer" ? _to : _category),
+                                focusNode: _thirdFocusNode,
+                                cursorColor: Colors.white,
+                                readOnly: true,
+                                style: TextStyle(color: Colors.white, fontSize:15),
+                                decoration: InputDecoration(
+                                  enabledBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Colors.white10,
+                                        width: 2.0),),
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: underlineColor,
+                                        width: 2.0),),
+                                ),
+                                onTap: () async {
+                                  setState(() {
+                                    isVisible = true;
+                                    if (transactType == "Transfer") {
+                                      selecting = "To";
+                                    } else {
+                                      selecting = "Category";
+                                    }
+
+
+                                  });
+                                }
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(left: 30.0, right: 30.0),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 100,
+                            child:
+                            Text("Amount",
+                                style: TextStyle(color: Colors.white60, fontSize:15)),
+                          ),
+                          Expanded(
+                            child: TextField(
+                                controller: _amount,
+                                focusNode: _fourthFocusNode,
+                                cursorColor: Colors.white,
+                                readOnly: true,
+                                style: TextStyle(color: Colors.white, fontSize:15),
+                                decoration: InputDecoration(
+                                  enabledBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Colors.white10,
+                                        width: 2.0),),
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: underlineColor,
+                                        width: 2.0),),
+                                ),
+                                onTap: () async {
+                                  setState(() {
+                                    isVisible = true;
+                                    selecting = "Amount";
+
+                                  });
+                                }
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(left: 30.0, right: 30.0),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 100,
+                            child:
+                            Text("Note",
+                                style: TextStyle(color: Colors.white60, fontSize:15)),
+                          ),
+                          Expanded(
+                            child: TextField(
+                                controller: _note,
+                                focusNode: _fifthFocusNode,
+                                cursorColor: Colors.white,
+                                style: TextStyle(color: Colors.white, fontSize:15),
+                                decoration: InputDecoration(
+                                  enabledBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Colors.white10,
+                                        width: 2.0),),
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: underlineColor,
+                                        width: 2.0),),
+                                ),
+                                onTap: () async {
+                                  setState(() {
+                                    isVisible = false;
+                                  });
+                                }
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                        height: 20
+                    )
+                  ],
+                ),
+              ),
+            ),
             SizedBox(
                 height: 40
-            ),
-            Container(
-              padding: EdgeInsets.only(left: 30.0, right: 30.0),
-              child: Row(
-                children: [
-                  Container(
-                    width: 100,
-                    child:
-                    Text("Date",
-                        style: TextStyle(color: Colors.white60, fontSize:15)),
-                  ),
-                  Expanded(
-                    child: TextField(
-                        controller: _date,
-                        focusNode: _firstFocusNode,
-                        cursorColor: Colors.white,
-                        readOnly: true,
-                        style: TextStyle(color: Colors.white, fontSize:15),
-                        decoration: InputDecoration(
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors.white10,
-                                width: 2.0),),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: underlineColor,
-                                width: 2.0),),
-                        ),
-                        onTap: () async {
-                          DateTime? pickedDate = await showDatePicker(
-                              context: context,
-                              initialDate: DateTime.now(),
-                              firstDate: DateTime(2000),
-                              lastDate: DateTime(2100));
-
-                          if (pickedDate != null) {
-                            setState(() {
-                              isVisible = false;
-                              _dateTime = pickedDate;
-                              _date.text = DateFormat('yyyy-MM-dd').format(pickedDate) + " (" + DateFormat('EEEE').format(pickedDate) + ")";
-                              FocusScope.of(context).requestFocus(_secondFocusNode);
-                            });
-                          }
-                        }
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.only(left: 30.0, right: 30.0),
-              child: Row(
-                children: [
-                  Container(
-                    width: 100,
-                    child:
-                    Text("Account",
-                        style: TextStyle(color: Colors.white60, fontSize:15)),
-                  ),
-                  Expanded(
-                    child: TextField(
-                        controller: _account,
-                        focusNode: _secondFocusNode,
-                        cursorColor: Colors.white,
-                        readOnly: true,
-                        style: TextStyle(color: Colors.white, fontSize:15),
-                        decoration: InputDecoration(
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors.white10,
-                                width: 2.0),),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: underlineColor,
-                                width: 2.0),),
-                        ),
-                        onTap: () async {
-                          setState(() {
-                            isVisible = true;
-                            selecting = "Accounts";
-
-                          });
-                        }
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.only(left: 30.0, right: 30.0),
-              child: Row(
-                children: [
-                  Container(
-                    width: 100,
-                    child:
-                    Text("Category",
-                        style: TextStyle(color: Colors.white60, fontSize:15)),
-                  ),
-                  Expanded(
-                    child: TextField(
-                        controller: _category,
-                        focusNode: _thirdFocusNode,
-                        cursorColor: Colors.white,
-                        readOnly: true,
-                        style: TextStyle(color: Colors.white, fontSize:15),
-                        decoration: InputDecoration(
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors.white10,
-                                width: 2.0),),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: underlineColor,
-                                width: 2.0),),
-                        ),
-                        onTap: () async {
-                          setState(() {
-                            isVisible = true;
-                            selecting = "Category";
-
-                          });
-                        }
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.only(left: 30.0, right: 30.0),
-              child: Row(
-                children: [
-                  Container(
-                    width: 100,
-                    child:
-                    Text("Amount",
-                        style: TextStyle(color: Colors.white60, fontSize:15)),
-                  ),
-                  Expanded(
-                    child: TextField(
-                        controller: _amount,
-                        focusNode: _fourthFocusNode,
-                        cursorColor: Colors.white,
-                        readOnly: true,
-                        style: TextStyle(color: Colors.white, fontSize:15),
-                        decoration: InputDecoration(
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors.white10,
-                                width: 2.0),),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: underlineColor,
-                                width: 2.0),),
-                        ),
-                        onTap: () async {
-                          setState(() {
-                            isVisible = true;
-                            selecting = "Amount";
-
-                          });
-                        }
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.only(left: 30.0, right: 30.0),
-              child: Row(
-                children: [
-                  Container(
-                    width: 100,
-                    child:
-                    Text("Note",
-                        style: TextStyle(color: Colors.white60, fontSize:15)),
-                  ),
-                  Expanded(
-                    child: TextField(
-                        controller: _note,
-                        focusNode: _fifthFocusNode,
-                        cursorColor: Colors.white,
-                        style: TextStyle(color: Colors.white, fontSize:15),
-                        decoration: InputDecoration(
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors.white10,
-                                width: 2.0),),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: underlineColor,
-                                width: 2.0),),
-                        ),
-                        onTap: () async {
-                          setState(() {
-                            isVisible = false;
-                          });
-                        }
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 40,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -506,15 +600,73 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                   GestureDetector(
                     onTap: () {
                       setState(() {
-                        final transaction = TransactionData(
-                            id: id,
-                            date: _dateTime,
-                            account: _account.text,
-                            category: _category.text,
-                            amount: double.parse(_amount.text),
-                            note: _note.text,
-                            transactType: transactType);
-                        BudgetExpenseDatabase.instance.updateTransaction(transaction);
+                        if (_transactType != transactType) {
+                          if (_transactType == "Transfer") {
+                            double amountToRestore = amount;
+                            double amountToDeduct = amount * -1;
+                            BudgetExpenseDatabase.instance.updateAccountAmount(accountId, amountToRestore, true);
+                            BudgetExpenseDatabase.instance.updateAccountAmount(toAccountId, amountToDeduct, true);
+                          } else {
+                            double amountToRestore = amount;
+
+                            if (_transactType == "Income") {
+                              amountToRestore *= -1;
+                            }
+
+                            BudgetExpenseDatabase.instance.updateAccountAmount(accountId, amountToRestore, true);
+                          }
+                        }
+
+                        if (transactType == "Transfer") {
+
+                          double amountToTransfer = double.parse(_amount.text);
+                          BudgetExpenseDatabase.instance.updateAccountAmount(fromAccount?.id, amountToTransfer*-1, true);
+                          BudgetExpenseDatabase.instance.updateAccountAmount(toAccount?.id, amountToTransfer, true);
+
+                          final transaction1 = TransactionData(
+                              id: id,
+                              date: _dateTime,
+                              accountId: fromAccount?.id,
+                              account: fromAccount?.accountGroup ?? "",
+                              category: "Transfer",
+                              amount: double.parse(_amount.text),
+                              note: (fromAccount?.name ?? "") + " -> " + (toAccount?.name ?? ""),
+                              transactType: "Transfer");
+
+                          BudgetExpenseDatabase.instance.updateTransaction(transaction1);
+
+
+                        } else {
+
+                          final transaction = TransactionData(
+                              id: id,
+                              date: _dateTime,
+                              accountId: selectedAccount?.id,
+                              account: _account.text,
+                              category: _category.text,
+                              amount: double.parse(_amount.text),
+                              note: _note.text,
+                              transactType: transactType
+                          );
+                          BudgetExpenseDatabase.instance.updateTransaction(
+                              transaction);
+
+                          double amountSpentOrReceived = double.parse(_amount.text);
+                          double amountLastTransaction = amount;
+
+                          if (transactType == "Expense") {
+
+                            amountSpentOrReceived *= -1;
+                          }
+
+                          if (transactType == "Income") {
+                            amountLastTransaction *= -1;
+                          }
+
+                          BudgetExpenseDatabase.instance.updateAccountAmount(selectedAccount?.id, amountLastTransaction, true);
+                          BudgetExpenseDatabase.instance.updateAccountAmount(selectedAccount?.id, amountSpentOrReceived, true);
+
+                        }
                         Navigator.push(context, MaterialPageRoute(
                           builder: (context) => HomePage(1),
                         ));
@@ -534,6 +686,21 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                 GestureDetector(
                     onTap: () {
                       setState(() {
+                        if (_transactType == "Transfer") {
+                          double amountToRestore = amount;
+                          double amountToDeduct = amount * -1;
+                          BudgetExpenseDatabase.instance.updateAccountAmount(accountId, amountToRestore, true);
+                          BudgetExpenseDatabase.instance.updateAccountAmount(toAccountId, amountToDeduct, true);
+                        } else {
+                          double amountToRestore = amount;
+
+                          if (_transactType == "Income") {
+                            amountToRestore *= -1;
+                          }
+
+                          BudgetExpenseDatabase.instance.updateAccountAmount(accountId, amountToRestore, true);
+                        }
+
                         BudgetExpenseDatabase.instance.deleteTransaction(id);
                         Navigator.push(context, MaterialPageRoute(
                           builder: (context) => HomePage(1),
@@ -553,6 +720,9 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                   ),
               ],
             ),
+            SizedBox(
+                height: 40
+            ),
             Visibility(
               visible: isVisible,
               child: Column(
@@ -566,11 +736,26 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                         children: [
                           Text(selecting,
                               style: TextStyle(color: Colors.black, fontSize:15)),
-                          IconButton(iconSize: 20, onPressed: () {
-                            setState(() {
-                              isVisible = false;
-                            });
-                          }, icon: Icon(Icons.close))
+                          Row(
+                            children: [
+                              IconButton(iconSize: 20, onPressed: () {
+                                setState(() {
+                                  if (selecting == "Accounts") {
+                                    Navigator.pushNamed(context, '/accountDataPage');
+                                  } else if (selecting == "Category") {
+                                    Navigator.push(context, MaterialPageRoute(
+                                      builder: (context) => CategoryDataPage(transactType : transactType),
+                                    ));
+                                  }
+                                });
+                              }, icon: Icon(Icons.edit)),
+                              IconButton(iconSize: 20, onPressed: () {
+                                setState(() {
+                                  isVisible = false;
+                                });
+                              }, icon: Icon(Icons.close))
+                            ],
+                          ),
                         ],
                       )
                   ),

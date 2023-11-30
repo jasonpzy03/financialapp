@@ -37,6 +37,8 @@ class BudgetExpenseDatabase {
       CREATE TABLE $tableTransactions ( 
         ${TransactionFields.id} $idType, 
         ${TransactionFields.date} $dateType,
+        ${TransactionFields.accountId} 'INTEGER NOT NULL', 
+        ${TransactionFields.toAccountId} 'INTEGER NOT NULL', 
         ${TransactionFields.account} $textType,
         ${TransactionFields.category} $textType,
         ${TransactionFields.amount} $doubleType,
@@ -118,9 +120,31 @@ class BudgetExpenseDatabase {
     // final result =
     //     await db.rawQuery('SELECT * FROM $tableNotes ORDER BY $orderBy');
 
-    final result = await db.query(tableAccounts);//, where: "${AccountFields.accountGroup} = ?", whereArgs:[group]);
+    final result = await db.query(tableAccounts, orderBy: "${AccountFields.id} ASC");//, where: "${AccountFields.accountGroup} = ?", whereArgs:[group]);
 
     return result.map((json) => AccountData.fromJson(json)).toList();
+  }
+
+  Future<Map<int?, AccountData>> readAllAccountsMap() async {
+    final db = await instance.database;
+
+    // final result =
+    //     await db.rawQuery('SELECT * FROM $tableNotes ORDER BY $orderBy');
+
+    //final result = await db.query(tableAccounts, orderBy: "${AccountFields.id} ASC");//, where: "${AccountFields.accountGroup} = ?", whereArgs:[group]);
+
+    //return result.map((json) => AccountData.fromJson(json)).toList();
+
+    final List<Map<String, dynamic>> result = await db.query(tableAccounts, orderBy: "${AccountFields.id} ASC");
+
+    // Convert the List<Map<String, dynamic>> to a Map<int, AccountData>
+    Map<int?, AccountData> accountMap = {};
+    result.forEach((json) {
+      AccountData accountData = AccountData.fromJson(json);
+      accountMap[accountData.id] = accountData;
+    });
+
+    return accountMap;
   }
 
   Future readAvailableGroups() async {
@@ -158,6 +182,35 @@ class BudgetExpenseDatabase {
     return result.toList();
   }
 
+  Future getAssets() async {
+    final db = await instance.database;
+
+    final result =
+    await db.rawQuery("SELECT SUM(${AccountFields.amount}) as Assets FROM $tableAccounts WHERE ${AccountFields.amount} >= 0");
+
+    return result.toList();
+  }
+
+  Future getLiabilities() async {
+    final db = await instance.database;
+
+    final result =
+    await db.rawQuery("SELECT SUM(${AccountFields.amount}) as Liabilities FROM $tableAccounts WHERE ${AccountFields.amount} < 0");
+    return result.toList();
+  }
+
+  Future getExpense(String category, String month, String year) async {
+    final db = await instance.database;
+
+    if (month.length == 1) {
+      month = "0" + month;
+    }
+
+    final result =
+    await db.rawQuery("SELECT SUM(${TransactionFields.amount}) as totalExpense FROM $tableTransactions WHERE ${TransactionFields.category} == '$category' AND strftime('%m', ${TransactionFields.date}) = '$month' AND strftime('%Y', ${TransactionFields.date}) = '$year'");
+    return result.toList();
+  }
+
   Future<int> updateTransaction(TransactionData transactionData) async {
     final db = await instance.database;
 
@@ -167,6 +220,17 @@ class BudgetExpenseDatabase {
       where: '${TransactionFields.id} = ?',
       whereArgs: [transactionData.id],
     );
+  }
+
+  Future<int> updateAccountAmount(int? id, double amount, bool isAdding) async {
+    final db = await instance.database;
+
+    if (isAdding) {
+      return db.rawUpdate("UPDATE $tableAccounts SET ${AccountFields.amount} = ${AccountFields.amount} + $amount WHERE ${AccountFields.id} = $id");
+    } else {
+      return db.rawUpdate("UPDATE $tableAccounts SET ${AccountFields.amount} = $amount WHERE ${AccountFields.id} = $id");
+
+    }
   }
 
   Future<int> updateAccount(AccountData accountData) async {

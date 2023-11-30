@@ -39,6 +39,7 @@ dependencies:
   page_transition: ^2.1.0
   intl: ^0.18.1
   sqflite: ^2.3.0
+  shared_preferences: ^2.2.2
 
 
 dev_dependencies:

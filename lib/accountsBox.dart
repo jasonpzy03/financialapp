@@ -42,17 +42,21 @@ class AccountBox extends StatelessWidget {
               Text("Total Balance: ",
                   style: TextStyle(color: Colors.white, fontSize:20, fontWeight: FontWeight.bold)),
               SizedBox(
-                  height:10
+                  height:20
               ),
-              Row(
-                children: [
-                  Text("\$ ",
-                      style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
-                  Text(amount.toString(),
-                      style: TextStyle(color: Colors.white, fontSize:20, fontWeight: FontWeight.bold)),
-                ],
-              )
-
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Container(
+                  child: Row(
+                    children: [
+                      Text("\$ ",
+                          style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
+                      Text(amount.toStringAsFixed(2),
+                          style: TextStyle(color: Colors.white, fontSize:20, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                ),
+              ),
             ],
           )
       ),

@@ -7,6 +7,8 @@ import 'package:ui_practice_1/db/budgetexpense.dart';
 import 'package:ui_practice_1/editTransactionPage.dart';
 import 'package:ui_practice_1/model/transaction.dart';
 
+import 'morepage.dart';
+
 class HomePage extends StatefulWidget {
 
   int currentIndex = 0;
@@ -35,6 +37,7 @@ class _HomePageState extends State<HomePage> {
       HomePageContent(),
       TransactionsPage(),
       AccountsPage(),
+      MorePage()
   ];
 
   @override
@@ -42,11 +45,15 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Color.fromRGBO(35, 38, 51, 1.0),
       body: tabs[_currentIndex],
-      floatingActionButton: _currentIndex < 2 ? FloatingActionButton(
+      floatingActionButton: _currentIndex < 3 ? FloatingActionButton(
           child: Icon(Icons.add),
           backgroundColor: Colors.blue,
           onPressed: () {
-            Navigator.pushNamed(context, '/transactionDataPage');
+            if (_currentIndex < 2) {
+              Navigator.pushNamed(context, '/transactionDataPage');
+            } else {
+              Navigator.pushNamed(context, '/accountDataPage');
+            }
           }
       ) : null,
       bottomNavigationBar: BottomNavigationBar(

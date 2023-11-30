@@ -1,46 +1,69 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ui_practice_1/homepage.dart';
 import '../db/budgetexpense.dart';
 import '../model/transaction.dart';
 import 'package:intl/intl.dart';
-import 'homepage.dart';
+import 'package:ui_practice_1/transactionspage.dart';
+
 import 'model/account.dart';
 
-class AccountDataPage extends StatefulWidget {
-  const AccountDataPage({super.key});
+class AddBudgetPage extends StatefulWidget {
+
+
+  const AddBudgetPage({super.key});
 
   @override
-  _AccountDataPageState createState() => _AccountDataPageState();
+  _AddBudgetPageState createState() => _AddBudgetPageState();
 }
 
-class _AccountDataPageState extends State<AccountDataPage> {
+class _AddBudgetPageState extends State<AddBudgetPage> {
 
-  TextEditingController _group = TextEditingController(text: "Cash");
+  TextEditingController _category = TextEditingController();
   TextEditingController _amount = TextEditingController();
-  TextEditingController _name = TextEditingController();
-  TextEditingController _description = TextEditingController();
   final FocusNode _firstFocusNode = FocusNode();
   final FocusNode _secondFocusNode = FocusNode();
-  final FocusNode _thirdFocusNode = FocusNode();
-  final FocusNode _fourthFocusNode = FocusNode();
 
-  bool isVisible = false;
-  String selecting = "Account Group";
-
-  List<String> accountGroups = ["Cash", "Accounts", "Card", "Debit Card", "Savings", "Top-Up/Prepaid", "Investments", "Overdrafts", "Loan", "Insurance", "Others"];
-  List<String> keyboard = ["1", "2", "3", "Backspace", "4", "5", "6", "-", "7", "8", "9", "", "", "0", ".", "Done"];
+  late List<String> categories;
+  List<String> keyboard = ["1", "2", "3", "Backspace", "4", "5", "6", "", "7", "8", "9", "", "", "0", ".", "Done"];
   List<Widget> selections = [];
 
-  Widget generateSelections() {
+  late SharedPreferences prefs;
+  bool isVisible = false;
+  String selecting = "";
 
+
+  @override
+  void initState() {
+    super.initState();
+
+    initPrefs();
+  }
+  bool isLoading = false;
+
+  @override
+  void dispose() {
+    BudgetExpenseDatabase.instance.close();
+
+    super.dispose();
+  }
+
+  Future initPrefs() async {
+    prefs = await SharedPreferences.getInstance();
+    categories = prefs.getStringList('expenseCategories') ?? [];
+  }
+
+  Widget generateSelections() {
     selections.clear();
-    if (selecting == "Account Group") {
-      for (int i = 0; i < accountGroups.length; i++) {
+
+    if (selecting == "Category") {
+      for (int i = 0; i < categories.length; i++) {
         selections.add(
           GestureDetector(
             onTap: () {
               setState(() {
-                _group.text = accountGroups[i];
-                isVisible = false;
+                _category.text = categories[i];
+                selecting = "Amount";
                 FocusScope.of(context).requestFocus(_secondFocusNode);
               });
             },
@@ -56,25 +79,26 @@ class _AccountDataPageState extends State<AccountDataPage> {
                 ),
                 child:
                 Center(
-                  child: Text(accountGroups[i],
+                  child: Text(categories[i],
                       style: TextStyle(color: Colors.white, fontSize:15)),
                 )
             ),
           ),
         );
       }
-    } else if(selecting == "Amount") {
+    } else if (selecting == "Amount") {
       for (int i = 0; i < keyboard.length; i++) {
         selections.add(
           GestureDetector(
             onTap: () {
               setState(() {
                 if (keyboard[i] == "Backspace") {
-                  _amount.text =
-                      _amount.text.substring(0, _amount.text.length - 1);
+                  _amount.text = _amount.text.substring(0, _amount.text.length - 1);
                 } else if (keyboard[i] == "Done") {
                   if (!_amount.text.contains('.')) {
+
                     _amount.text = _amount.text + ".00";
+
                   } else if ((_amount.text.split('.')[1]?.length ?? 0) < 2) {
                     if ((_amount.text.split('.')[1]?.length ?? 0) == 0)
                       _amount.text = _amount.text + "00";
@@ -82,33 +106,20 @@ class _AccountDataPageState extends State<AccountDataPage> {
                       _amount.text = _amount.text + "0";
                   }
                   isVisible = false;
-                  FocusScope.of(context).requestFocus(_fourthFocusNode);
                 } else if (keyboard[i] == "") {
-                  //Do nothing
-                }
-                else if (keyboard[i] == "-") {
-                  if (_amount.text[0] == "-") {
-                    _amount.text = _amount.text.substring(1);
-                  } else {
-                    _amount.text = "-" + _amount.text;
-                  }
-
                 } else {
-                  if (!_amount.text.contains('.') ||
-                      (_amount.text.split('.')[1]?.length ?? 0) < 2) {
+                  if (!_amount.text.contains('.') || (_amount.text.split('.')[1]?.length ?? 0) < 2) {
                     _amount.text = _amount.text + keyboard[i];
                   }
                 }
+
               });
             },
             child: Container(
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width * 0.25,
+                width: MediaQuery.of(context).size.width * 0.25,
                 height: 50,
                 decoration: BoxDecoration(
-                  color: keyboard[i] == "" ? Colors.white10 : Color.fromRGBO(35, 38, 51, 1.0),
+                  color: (keyboard[i] == "" ? Colors.white10 : keyboard[i] == "Done" ? Colors.blue : Color.fromRGBO(35, 38, 51, 1.0)),
                   border: Border.all(
                     color: Colors.white10, // Border color
                     width: 1.0, // Border width
@@ -116,10 +127,8 @@ class _AccountDataPageState extends State<AccountDataPage> {
                 ),
                 child:
                 Center(
-                  child: (keyboard[i] == "Backspace" ? Icon(
-                    Icons.backspace, color: Colors.white,) : Text(keyboard[i],
-                      style: TextStyle(color: Colors.white,
-                          fontSize: (keyboard[i] == "Done" ? 20 : 25)))),
+                  child: (keyboard[i] == "Backspace" ? Icon(Icons.backspace, color: Colors.white,) :  Text(keyboard[i],
+                      style: TextStyle(color: Colors.white,  fontSize: (keyboard[i] == "Done" ? 20 : 25)))),
                 )
             ),
           ),
@@ -127,7 +136,7 @@ class _AccountDataPageState extends State<AccountDataPage> {
       }
     }
 
-      // Return the list of widgets
+    // Return the list of widgets
     return Expanded(
       child: ListView(
           padding: EdgeInsets.zero,
@@ -138,8 +147,9 @@ class _AccountDataPageState extends State<AccountDataPage> {
           ),]
       ),
     );
-
   }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -154,15 +164,13 @@ class _AccountDataPageState extends State<AccountDataPage> {
                   IconButton(
                       icon: Icon(Icons.arrow_back, color: Colors.white, size: 30),
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => HomePage(2),
-                        ));
+                        Navigator.pushNamed(context,'/budgetsPage');
                       }
                   ),
                   SizedBox(
                       width: 10
                   ),
-                  Text("Add Account",
+                  Text("Update Budget",
                       style: TextStyle(color: Colors.white, fontSize:30, fontWeight: FontWeight.bold)),
                 ],
               ),
@@ -177,12 +185,12 @@ class _AccountDataPageState extends State<AccountDataPage> {
                   Container(
                     width: 100,
                     child:
-                    Text("Group",
+                    Text("Category",
                         style: TextStyle(color: Colors.white60, fontSize:15)),
                   ),
                   Expanded(
                     child: TextField(
-                        controller: _group,
+                        controller: _category,
                         focusNode: _firstFocusNode,
                         cursorColor: Colors.white,
                         readOnly: true,
@@ -194,49 +202,13 @@ class _AccountDataPageState extends State<AccountDataPage> {
                                 width: 2.0),),
                           focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
-                                color: Colors.blue,
+                                color: Colors.white,
                                 width: 2.0),),
                         ),
                         onTap: () async {
                           setState(() {
                             isVisible = true;
-                            selecting = "Account Group";
-                          });
-                        }
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.only(left: 30.0, right: 30.0),
-              child: Row(
-                children: [
-                  Container(
-                    width: 100,
-                    child:
-                    Text("Name",
-                        style: TextStyle(color: Colors.white60, fontSize:15)),
-                  ),
-                  Expanded(
-                    child: TextField(
-                        controller: _name,
-                        focusNode: _secondFocusNode,
-                        cursorColor: Colors.white,
-                        style: TextStyle(color: Colors.white, fontSize:15),
-                        decoration: InputDecoration(
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors.white10,
-                                width: 2.0),),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors.blue,
-                                width: 2.0),),
-                        ),
-                        onTap: () async {
-                          setState(() {
-                            isVisible = false;
+                            selecting = "Category";
                           });
                         }
                     ),
@@ -257,7 +229,7 @@ class _AccountDataPageState extends State<AccountDataPage> {
                   Expanded(
                     child: TextField(
                         controller: _amount,
-                        focusNode: _thirdFocusNode,
+                        focusNode: _secondFocusNode,
                         cursorColor: Colors.white,
                         readOnly: true,
                         style: TextStyle(color: Colors.white, fontSize:15),
@@ -268,82 +240,45 @@ class _AccountDataPageState extends State<AccountDataPage> {
                                 width: 2.0),),
                           focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
-                                color: Colors.blue,
-                                width: 2.0),),
-                        ),
-                        onTap: () async {
-                          isVisible = true;
-                          selecting = "Amount";
-                        }
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.only(left: 30.0, right: 30.0),
-              child: Row(
-                children: [
-                  Container(
-                    width: 100,
-                    child:
-                    Text("Description",
-                        style: TextStyle(color: Colors.white60, fontSize:15)),
-                  ),
-                  Expanded(
-                    child: TextField(
-                      controller: _description,
-                        focusNode: _fourthFocusNode,
-                        cursorColor: Colors.white,
-                        style: TextStyle(color: Colors.white, fontSize:15),
-                        decoration: InputDecoration(
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors.white10,
-                                width: 2.0),),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors.blue,
+                                color: Colors.white,
                                 width: 2.0),),
                         ),
                         onTap: () async {
                           setState(() {
-                            isVisible = false;
+                            isVisible = true;
+                            selecting = "Amount";
+
                           });
                         }
                     ),
                   ),
-                ],
+               ]
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(40.0),
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    final account = AccountData(
-                        accountGroup: _group.text,
-                        name: _name.text,
-                        amount: double.parse(_amount.text),
-                        description: _description.text
-                    );
-                    BudgetExpenseDatabase.instance.createAccount(account);
-                    Navigator.push(context, MaterialPageRoute(
-                        builder: (context) => HomePage(2),
-                    ));
-                  });
-                },
-                child: Container(
-                    padding: EdgeInsets.all(10.0),
-                    width: MediaQuery.of(context).size.width / 2,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      color: Colors.blue,
-                    ),
-                    child: Text("Save",
-                      style: TextStyle(color: Colors.white, fontSize:20), textAlign: TextAlign.center,)
-                ),
+            SizedBox(
+                height: 40
+            ),
+            GestureDetector(
+              onTap: () {
+                if (_category.text != "" && _amount.text != "") {
+                  prefs.setString(_category.text, _amount.text);
+                }
+
+                Navigator.pushNamed(context,'/budgetsPage');
+              },
+              child: Container(
+                  padding: EdgeInsets.all(10.0),
+                  width: MediaQuery.of(context).size.width * 0.5,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: Colors.blue,
+                  ),
+                  child: Text("Update",
+                    style: TextStyle(color: Colors.white, fontSize:20), textAlign: TextAlign.center,)
               ),
+            ),
+            SizedBox(
+                height: 40
             ),
             Visibility(
               visible: isVisible,
@@ -373,10 +308,8 @@ class _AccountDataPageState extends State<AccountDataPage> {
                 visible: isVisible,
                 child: generateSelections()
             )
-          ]
+        ]
       ),
     );
   }
 }
-
-

@@ -4,6 +4,7 @@ import 'package:ui_practice_1/editTransactionPage.dart';
 import 'package:ui_practice_1/model/transaction.dart';
 import '../transactionsBox.dart';
 import 'accountsBox.dart';
+import 'editAcountPage.dart';
 import 'model/account.dart';
 
 class AccountsPage extends StatefulWidget {
@@ -17,6 +18,10 @@ class _AccountsPageState extends State<AccountsPage> {
   late List<AccountData> accounts;
   late List<String> accountGroups;
   bool isLoading = false;
+
+  late double assets;
+  late double liabilities;
+  late double total;
 
   @override
   void initState() {
@@ -37,6 +42,9 @@ class _AccountsPageState extends State<AccountsPage> {
 
     accounts = await BudgetExpenseDatabase.instance.readAllAccounts();
     accountGroups = await BudgetExpenseDatabase.instance.readAvailableGroups();
+    assets = (await BudgetExpenseDatabase.instance.getAssets())?[0]['Assets'] ?? 0;
+    liabilities = (await BudgetExpenseDatabase.instance.getLiabilities())?[0]['Liabilities'] ?? 0;
+    total = assets + liabilities;
 
     setState(() => isLoading = false);
   }
@@ -45,19 +53,22 @@ class _AccountsPageState extends State<AccountsPage> {
     List<Widget> widgets = [];
     for (int i = 0; i < accountGroups.length; i++) {
       widgets.add(
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(accountGroups[i],
-                style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
-            GestureDetector(
-              onTap: () {
-
-              },
-              child: Text("See more",
-                  style: TextStyle(color: Colors.white24, fontSize:15, fontWeight: FontWeight.bold)),
-            ),
-          ],
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 30.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(accountGroups[i],
+                  style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
+              // GestureDetector(
+              //   onTap: () {
+              //
+              //   },
+              //   child: Text("See more",
+              //       style: TextStyle(color: Colors.white24, fontSize:15, fontWeight: FontWeight.bold)),
+              //),
+            ],
+          ),
         ),
       );
       widgets.add(
@@ -77,6 +88,7 @@ class _AccountsPageState extends State<AccountsPage> {
 
       widgets.add(
         Container(
+          padding: EdgeInsets.symmetric(horizontal: 30.0),
           height: 160,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
@@ -84,7 +96,12 @@ class _AccountsPageState extends State<AccountsPage> {
             itemBuilder: (context, index) {
               final account = accountWithThisGroup[index];
 
-              return AccountBox(account: account);
+              return GestureDetector(onTap: () {
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (context) => AccountEditPage(account: account),
+                ));
+              },
+                  child: AccountBox(account: account));
             },
             physics: BouncingScrollPhysics(),
           ),
@@ -105,30 +122,21 @@ class _AccountsPageState extends State<AccountsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return isLoading ? Center(child: const CircularProgressIndicator()) : Padding(
-      padding: EdgeInsets.only(top: 60.0, left: 30.0, right: 30.0),
-      child: Column(
+    return isLoading ? Center(child: const CircularProgressIndicator()) : Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
+              padding: EdgeInsets.only(top: 60.0, left: 30.0, right: 30.0),
               child:
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Accounts",
-                          style: TextStyle(color: Colors.white, fontSize:30, fontWeight: FontWeight.bold)),
-                      IconButton(onPressed: () {
-                        Navigator.pushNamed(context, '/accountDataPage');
-                      }, icon: Icon(Icons.add, color: Colors.white, size: 30,))
-                    ],
-                  ),
+                  Text("Accounts",
+                      style: TextStyle(color: Colors.white, fontSize:30, fontWeight: FontWeight.bold)),
                   SizedBox(
                       height: 20
                   ),
-                  Text("Total Balance",
+                  Text("Net Worth",
                       style: TextStyle(color: Colors.white24, fontSize:15, fontWeight: FontWeight.bold)),
                   SizedBox(
                       height:10
@@ -142,17 +150,21 @@ class _AccountsPageState extends State<AccountsPage> {
                       Container(
                         width: MediaQuery.sizeOf(context).width * 0.7,
                         height: 50,
-                        child: Text("0",
-                            style: TextStyle(color: Colors.white, fontSize:45, fontWeight: FontWeight.bold)),
-                      ),
-                      SizedBox(
-                          width:10
+                        child: FittedBox(
+                          alignment: Alignment.centerLeft,
+                          fit: BoxFit.scaleDown,
+                          child: Text(total.toStringAsFixed(2),
+                              style: TextStyle(color: Colors.white, fontSize:45, fontWeight: FontWeight.bold)),
+                        ),
                       ),
                     ],
                   )
                 ],
               )
 
+          ),
+          SizedBox(
+              height: 15
           ),
           Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -177,8 +189,12 @@ class _AccountsPageState extends State<AccountsPage> {
                             Container(
                               width: MediaQuery.sizeOf(context).width * 0.2,
                               height: 20,
-                              child: Text("0",
-                                  style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
+                              child: FittedBox(
+                                alignment: Alignment.centerLeft,
+                                fit: BoxFit.scaleDown,
+                                child: Text("\$ " + assets.toStringAsFixed(2),
+                                    style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
+                              ),
                             ),
                           ],
                         )
@@ -206,8 +222,12 @@ class _AccountsPageState extends State<AccountsPage> {
                             Container(
                               width: MediaQuery.sizeOf(context).width * 0.2,
                               height: 20,
-                              child: Text("0",
-                                  style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
+                              child: FittedBox(
+                                alignment: Alignment.centerLeft,
+                                fit: BoxFit.scaleDown,
+                                child: Text("\$ " + liabilities.toStringAsFixed(2),
+                                    style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
+                              ),
                             ),
                           ],
                         )
@@ -226,7 +246,6 @@ class _AccountsPageState extends State<AccountsPage> {
             ),
           ),
         ],
-      ),
     );
 
 

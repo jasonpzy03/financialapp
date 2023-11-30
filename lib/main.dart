@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ui_practice_1/categoryData.dart';
 import 'package:ui_practice_1/editTransactionPage.dart';
 import 'package:ui_practice_1/transactionspage.dart';
 import '../homepage.dart';
@@ -7,6 +8,7 @@ import '../transactionData.dart';
 import 'package:page_transition/page_transition.dart';
 
 import 'accountData.dart';
+import 'budgets.dart';
 
 void main() {
   runApp(const MyApp());
@@ -42,6 +44,13 @@ class MyApp extends StatelessWidget {
           case '/accountDataPage':
             return PageTransition(
               child: AccountDataPage(),
+              type: PageTransitionType.bottomToTop,
+              settings: settings,
+            );
+            break;
+          case '/budgetsPage':
+            return PageTransition(
+              child: BudgetsPage(),
               type: PageTransitionType.bottomToTop,
               settings: settings,
             );

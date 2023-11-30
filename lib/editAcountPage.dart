@@ -5,14 +5,19 @@ import 'package:intl/intl.dart';
 import 'homepage.dart';
 import 'model/account.dart';
 
-class AccountDataPage extends StatefulWidget {
-  const AccountDataPage({super.key});
+class AccountEditPage extends StatefulWidget {
+  final AccountData? account;
+
+  const AccountEditPage({
+    Key? key,
+    this.account,
+  }) : super(key: key);
 
   @override
-  _AccountDataPageState createState() => _AccountDataPageState();
+  _AccountEditPageState createState() => _AccountEditPageState();
 }
 
-class _AccountDataPageState extends State<AccountDataPage> {
+class _AccountEditPageState extends State<AccountEditPage> {
 
   TextEditingController _group = TextEditingController(text: "Cash");
   TextEditingController _amount = TextEditingController();
@@ -29,6 +34,29 @@ class _AccountDataPageState extends State<AccountDataPage> {
   List<String> accountGroups = ["Cash", "Accounts", "Card", "Debit Card", "Savings", "Top-Up/Prepaid", "Investments", "Overdrafts", "Loan", "Insurance", "Others"];
   List<String> keyboard = ["1", "2", "3", "Backspace", "4", "5", "6", "-", "7", "8", "9", "", "", "0", ".", "Done"];
   List<Widget> selections = [];
+
+  late int id;
+  late String accountGroup;
+  late String name;
+  late double amount;
+  late String description;
+
+  @override
+  void initState() {
+    super.initState();
+
+    id = widget.account?.id ?? 0;
+    accountGroup = widget.account?.accountGroup ?? '';
+    name = widget.account?.name ?? '';
+    amount = widget.account?.amount ?? 0;
+    description = widget.account?.description ?? '';
+
+    _group.text = accountGroup;
+    _name.text = name;
+    _amount.text = amount.toString();
+    _description.text = description;
+
+  }
 
   Widget generateSelections() {
 
@@ -127,7 +155,7 @@ class _AccountDataPageState extends State<AccountDataPage> {
       }
     }
 
-      // Return the list of widgets
+    // Return the list of widgets
     return Expanded(
       child: ListView(
           padding: EdgeInsets.zero,
@@ -162,7 +190,7 @@ class _AccountDataPageState extends State<AccountDataPage> {
                   SizedBox(
                       width: 10
                   ),
-                  Text("Add Account",
+                  Text("Edit Account",
                       style: TextStyle(color: Colors.white, fontSize:30, fontWeight: FontWeight.bold)),
                 ],
               ),
@@ -220,25 +248,25 @@ class _AccountDataPageState extends State<AccountDataPage> {
                   ),
                   Expanded(
                     child: TextField(
-                        controller: _name,
-                        focusNode: _secondFocusNode,
-                        cursorColor: Colors.white,
-                        style: TextStyle(color: Colors.white, fontSize:15),
-                        decoration: InputDecoration(
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors.white10,
-                                width: 2.0),),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors.blue,
-                                width: 2.0),),
-                        ),
-                        onTap: () async {
-                          setState(() {
-                            isVisible = false;
-                          });
-                        }
+                      controller: _name,
+                      focusNode: _secondFocusNode,
+                      cursorColor: Colors.white,
+                      style: TextStyle(color: Colors.white, fontSize:15),
+                      decoration: InputDecoration(
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors.white10,
+                              width: 2.0),),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors.blue,
+                              width: 2.0),),
+                      ),
+                      onTap: () async {
+                        setState(() {
+                          isVisible = false;
+                        });
+                      }
                     ),
                   ),
                 ],
@@ -272,8 +300,11 @@ class _AccountDataPageState extends State<AccountDataPage> {
                                 width: 2.0),),
                         ),
                         onTap: () async {
-                          isVisible = true;
-                          selecting = "Amount";
+                          setState(() {
+                            isVisible = true;
+                            selecting = "Amount";
+                          });
+
                         }
                     ),
                   ),
@@ -293,57 +324,86 @@ class _AccountDataPageState extends State<AccountDataPage> {
                   Expanded(
                     child: TextField(
                       controller: _description,
-                        focusNode: _fourthFocusNode,
-                        cursorColor: Colors.white,
-                        style: TextStyle(color: Colors.white, fontSize:15),
-                        decoration: InputDecoration(
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors.white10,
-                                width: 2.0),),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors.blue,
-                                width: 2.0),),
-                        ),
-                        onTap: () async {
-                          setState(() {
-                            isVisible = false;
-                          });
-                        }
+                      focusNode: _fourthFocusNode,
+                      cursorColor: Colors.white,
+                      style: TextStyle(color: Colors.white, fontSize:15),
+                      decoration: InputDecoration(
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors.white10,
+                              width: 2.0),),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Colors.blue,
+                              width: 2.0),),
+                      ),
+                      onTap: () async {
+                        setState(() {
+                          isVisible = false;
+                        });
+                      }
                     ),
                   ),
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(40.0),
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    final account = AccountData(
-                        accountGroup: _group.text,
-                        name: _name.text,
-                        amount: double.parse(_amount.text),
-                        description: _description.text
-                    );
-                    BudgetExpenseDatabase.instance.createAccount(account);
-                    Navigator.push(context, MaterialPageRoute(
+            SizedBox(
+              height: 40,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      final account = AccountData(
+                          id: id,
+                          accountGroup: _group.text,
+                          name: _name.text,
+                          amount: double.parse(_amount.text),
+                          description: _description.text
+                      );
+                      BudgetExpenseDatabase.instance.updateAccount(account);
+                      Navigator.push(context, MaterialPageRoute(
                         builder: (context) => HomePage(2),
-                    ));
-                  });
-                },
-                child: Container(
-                    padding: EdgeInsets.all(10.0),
-                    width: MediaQuery.of(context).size.width / 2,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      color: Colors.blue,
-                    ),
-                    child: Text("Save",
-                      style: TextStyle(color: Colors.white, fontSize:20), textAlign: TextAlign.center,)
+                      ));
+                    });
+                  },
+                  child: Container(
+                      padding: EdgeInsets.all(10.0),
+                      width: MediaQuery.of(context).size.width * 0.35,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        color: Colors.blue,
+                      ),
+                      child: Text("Update",
+                        style: TextStyle(color: Colors.white, fontSize:20), textAlign: TextAlign.center,)
+                  ),
                 ),
-              ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      BudgetExpenseDatabase.instance.deleteAccount(id);
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) => HomePage(2),
+                      ));
+                    });
+                  },
+                  child: Container(
+                      padding: EdgeInsets.all(10.0),
+                      width: MediaQuery.of(context).size.width * 0.35,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        color: Colors.grey,
+                      ),
+                      child: Text("Delete",
+                        style: TextStyle(color: Colors.white, fontSize:20), textAlign: TextAlign.center,)
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 30
             ),
             Visibility(
               visible: isVisible,

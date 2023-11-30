@@ -4,7 +4,9 @@ import 'package:ui_practice_1/db/budgetexpense.dart';
 import 'package:ui_practice_1/editTransactionPage.dart';
 import 'package:ui_practice_1/model/transaction.dart';
 
+import 'editAcountPage.dart';
 import 'homepage.dart';
+import 'model/account.dart';
 
 class HomePageContent extends StatefulWidget {
   const HomePageContent({super.key});
@@ -21,6 +23,12 @@ class _HomePageContentState extends State<HomePageContent> {
 
   late double inflow;
   late double outflow;
+  late double assets;
+  late double liabilities;
+  late double total;
+
+  late List<AccountData> accounts;
+  late List<String> accountGroups;
 
   @override
   void initState() {
@@ -41,40 +49,121 @@ class _HomePageContentState extends State<HomePageContent> {
 
     inflow = (await BudgetExpenseDatabase.instance.getInflow(currentDate.month.toString(), currentDate.year.toString()))? [0]['Inflow'] ?? 0.0;
     outflow = (await BudgetExpenseDatabase.instance.getOutflow(currentDate.month.toString(), currentDate.year.toString()))? [0]['Outflow'] ?? 0.0;
+    assets = (await BudgetExpenseDatabase.instance.getAssets())?[0]['Assets'] ?? 0;
+    liabilities = (await BudgetExpenseDatabase.instance.getLiabilities())?[0]['Liabilities'] ?? 0;
+    total = assets + liabilities;
+
+    accounts = await BudgetExpenseDatabase.instance.readAllAccounts();
+    accountGroups = await BudgetExpenseDatabase.instance.readAvailableGroups();
 
     setState(() => isLoading = false);
   }
 
+  Widget generateGroupLists() {
+    List<Widget> widgets = [];
+    for (int i = 0; i < accountGroups.length; i++) {
+      widgets.add(
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 30.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(accountGroups[i],
+                  style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
+              GestureDetector(
+                onTap: () {
+
+                },
+                child: Text("See more",
+                    style: TextStyle(color: Colors.white24, fontSize:15, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+        ),
+      );
+      widgets.add(
+          SizedBox(
+              height: 40
+          )
+      );
+
+      List<AccountData> accountWithThisGroup = [];
+
+      for (int j = 0; j < accounts.length; j++) {
+
+        if (accounts[j].accountGroup == accountGroups[i]) {
+          accountWithThisGroup.add(accounts[j]);
+        }
+      }
+
+      widgets.add(
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 30.0),
+          height: 160,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: accountWithThisGroup.length,
+            itemBuilder: (context, index) {
+              final account = accountWithThisGroup[index];
+
+              return GestureDetector(onTap: () {
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (context) => AccountEditPage(account: account),
+                ));
+              },
+                  child: AccountBox(account: account));
+            },
+            physics: BouncingScrollPhysics(),
+          ),
+        ),
+      );
+
+      widgets.add(
+          SizedBox(
+              height: 200
+          )
+      );
+    }
+
+    return Wrap(
+      children: widgets,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return isLoading ? Center(child: const CircularProgressIndicator()) : Padding(
-      padding: EdgeInsets.only(top: 60.0, left: 30.0, right: 30.0),
-      child: Column(
+    return isLoading ? Center(child: const CircularProgressIndicator()) : Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
+              padding: EdgeInsets.only(top: 60.0, left: 30.0),
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Total Balance",
+                    Text("Home Summary",
+                        style: TextStyle(color: Colors.white, fontSize:30, fontWeight: FontWeight.bold)),
+                    SizedBox(
+                        height:20
+                    ),
+                    Text("Net Worth",
                         style: TextStyle(color: Colors.white24, fontSize:15, fontWeight: FontWeight.bold)),
                     SizedBox(
                         height:10
                     ),
-                    Row(
-                      children: [
-                        Text("\$", style: TextStyle(color: Colors.white, fontSize:25, fontWeight: FontWeight.bold)),
-                        SizedBox(
-                            width:10
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Container(
+                        child: Row(
+                          children: [
+                            Text("\$", style: TextStyle(color: Colors.white, fontSize:25, fontWeight: FontWeight.bold)),
+                            SizedBox(
+                                width:10
+                            ),
+                            Text(total.toStringAsFixed(2),
+                                style: TextStyle(color: Colors.white, fontSize:45, fontWeight: FontWeight.bold)),
+                          ],
                         ),
-                        Text("200,000",
-                            style: TextStyle(color: Colors.white, fontSize:45, fontWeight: FontWeight.bold)),
-                        SizedBox(
-                            width:10
-                        ),
-                        Text(".64",
-                            style: TextStyle(color: Colors.white, fontSize:25, fontWeight: FontWeight.bold)),
-                      ],
+                      ),
                     )
                   ]
               )
@@ -82,21 +171,24 @@ class _HomePageContentState extends State<HomePageContent> {
           SizedBox(
               height:20
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("Transactions",
-                  style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(
-                    builder: (context) => HomePage(1),
-                  ));
-                },
-                child: Text("See more",
-                    style: TextStyle(color: Colors.white24, fontSize:15, fontWeight: FontWeight.bold)),
-              ),
-            ],
+          Container(
+            padding: EdgeInsets.only(left: 30.0, right: 30.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Transactions",
+                    style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(
+                      builder: (context) => HomePage(1),
+                    ));
+                  },
+                  child: Text("See more",
+                      style: TextStyle(color: Colors.white24, fontSize:15, fontWeight: FontWeight.bold)),
+                ),
+              ],
+            ),
           ),
           SizedBox(
               height:10
@@ -121,11 +213,14 @@ class _HomePageContentState extends State<HomePageContent> {
                       ),
                       Row(
                         children: [
-                          Container(
-                            width: MediaQuery.sizeOf(context).width * 0.2,
-                            height: 20,
-                            child: Text("\$ " + inflow.toString(),
-                                style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Container(
+                              width: MediaQuery.sizeOf(context).width * 0.2,
+                              height: 20,
+                              child: Text("\$ " + inflow.toStringAsFixed(2),
+                                  style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
+                            ),
                           ),
                         ],
                       )
@@ -153,8 +248,14 @@ class _HomePageContentState extends State<HomePageContent> {
                           Container(
                             width: MediaQuery.sizeOf(context).width * 0.2,
                             height: 20,
-                            child: Text("\$ " + outflow.toString(),
-                                style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
+                            child: FittedBox(
+                              alignment: Alignment.centerLeft,
+                              fit: BoxFit.scaleDown,
+                              child: Container(
+                                child: Text("\$ " + outflow.toStringAsFixed(2),
+                                    style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
+                              ),
+                            ),
                           ),
                         ],
                       )
@@ -166,33 +267,48 @@ class _HomePageContentState extends State<HomePageContent> {
           SizedBox(
               height: 40
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("Accounts",
-                  style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
-              Text("See more",
-                  style: TextStyle(color: Colors.white24, fontSize:15, fontWeight: FontWeight.bold)),
-            ],
-          ),
-          SizedBox(
-              height: 10
-          ),
           Container(
-            height: 175,
-            child: ListView(
-              physics: BouncingScrollPhysics(),
-              scrollDirection: Axis.horizontal,
+            padding: EdgeInsets.only(left: 30.0, right: 30.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-
+                Text("Accounts",
+                    style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
+                GestureDetector(
+                  onTap: () {
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) => HomePage(2),
+                      ));
+                  },
+                  child: Text("See more",
+                      style: TextStyle(color: Colors.white24, fontSize:15, fontWeight: FontWeight.bold)),
+                ),
               ],
             ),
           ),
           SizedBox(
-              height: 50
+              height: 20
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 30.0),
+            height: 160,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: accounts.length,
+              itemBuilder: (context, index) {
+                final account = accounts[index];
+
+                return GestureDetector(onTap: () {
+                  Navigator.push(context, MaterialPageRoute(
+                    builder: (context) => AccountEditPage(account: account),
+                  ));
+                },
+                    child: AccountBox(account: account));
+              },
+              physics: BouncingScrollPhysics(),
+            ),
           ),
         ],
-      ),
     );
 
 
