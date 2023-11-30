@@ -135,9 +135,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                       IconButton(
                           icon: Icon(Icons.arrow_back, color: Colors.white, size: 30),
                           onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(
-                              builder: (context) => HomePage(0),
-                            ));
+                            Navigator.pop(context);
                           }
                       ),
                       SizedBox(

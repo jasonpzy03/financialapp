@@ -154,9 +154,7 @@ class _AccountDataPageState extends State<AccountDataPage> {
                   IconButton(
                       icon: Icon(Icons.arrow_back, color: Colors.white, size: 30),
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => HomePage(2),
-                        ));
+                        Navigator.pop(context);
                       }
                   ),
                   SizedBox(
@@ -320,18 +318,17 @@ class _AccountDataPageState extends State<AccountDataPage> {
               padding: const EdgeInsets.all(40.0),
               child: GestureDetector(
                 onTap: () {
-                  setState(() {
-                    final account = AccountData(
-                        accountGroup: _group.text,
-                        name: _name.text,
-                        amount: double.parse(_amount.text),
-                        description: _description.text
-                    );
-                    BudgetExpenseDatabase.instance.createAccount(account);
-                    Navigator.push(context, MaterialPageRoute(
-                        builder: (context) => HomePage(2),
-                    ));
-                  });
+
+                  final account = AccountData(
+                      accountGroup: _group.text,
+                      name: _name.text,
+                      amount: double.parse(_amount.text),
+                      description: _description.text
+                  );
+                  BudgetExpenseDatabase.instance.createAccount(account);
+
+                  Navigator.pop(context, true);
+
                 },
                 child: Container(
                     padding: EdgeInsets.all(10.0),

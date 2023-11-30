@@ -182,9 +182,7 @@ class _AccountEditPageState extends State<AccountEditPage> {
                   IconButton(
                       icon: Icon(Icons.arrow_back, color: Colors.white, size: 30),
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => HomePage(2),
-                        ));
+                        Navigator.pop(context);
                       }
                   ),
                   SizedBox(

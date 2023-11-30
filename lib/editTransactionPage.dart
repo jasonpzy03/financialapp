@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ui_practice_1/accountData.dart';
 import 'package:ui_practice_1/homepage.dart';
 import '../db/budgetexpense.dart';
 import '../model/transaction.dart';
@@ -118,6 +119,7 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
     selectedAccount = accounts[accountId];
     fromAccount = accounts[accountId];
     toAccount = accounts[toAccountId];
+    _from.text = accounts[accountId]?.name ?? "";
     _to.text = accounts[toAccountId]?.name ?? "";
     setState(() => isLoading = false);
   }
@@ -281,9 +283,7 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                   IconButton(
                       icon: Icon(Icons.arrow_back, color: Colors.white, size: 30),
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => HomePage(1),
-                        ));
+                        Navigator.pop(context);
                       }
                   ),
                   SizedBox(
@@ -305,7 +305,9 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                   GestureDetector(
                     onTap: () {
                       setState(() {
+                        isVisible = false;
                         transactType = "Income";
+                        _account.text = "";
                         _category.text = "";
                         underlineColor = Colors.blue;
                       });
@@ -327,7 +329,9 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                   GestureDetector(
                     onTap: () {
                       setState(() {
+                        isVisible = false;
                         transactType = "Expense";
+                        _account.text = "";
                         _category.text = "";
                         underlineColor = Colors.red.shade300;
                       });
@@ -349,6 +353,7 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                   GestureDetector(
                     onTap: () {
                       setState(() {
+                        isVisible = false;
                         transactType = "Transfer";
                         underlineColor = Colors.white;
                       });
@@ -602,21 +607,20 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                   GestureDetector(
                     onTap: () {
                       setState(() {
-                        if (_transactType != transactType) {
-                          if (_transactType == "Transfer") {
-                            double amountToRestore = amount;
-                            double amountToDeduct = amount * -1;
-                            BudgetExpenseDatabase.instance.updateAccountAmount(accountId, amountToRestore, true);
-                            BudgetExpenseDatabase.instance.updateAccountAmount(toAccountId, amountToDeduct, true);
-                          } else {
-                            double amountToRestore = amount;
+                        if (_transactType == "Transfer") {
+                          double amountToRestore = amount;
+                          double amountToDeduct = amount * -1;
+                          BudgetExpenseDatabase.instance.updateAccountAmount(accountId, amountToRestore, true);
+                          BudgetExpenseDatabase.instance.updateAccountAmount(toAccountId, amountToDeduct, true);
+                        } else {
 
-                            if (_transactType == "Income") {
-                              amountToRestore *= -1;
-                            }
+                          double amountToRestore = amount;
 
-                            BudgetExpenseDatabase.instance.updateAccountAmount(accountId, amountToRestore, true);
+                          if (_transactType == "Income") {
+                            amountToRestore *= -1;
                           }
+
+                          BudgetExpenseDatabase.instance.updateAccountAmount(accountId, amountToRestore, true);
                         }
 
                         if (transactType == "Transfer") {
@@ -629,6 +633,7 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                               id: id,
                               date: _dateTime,
                               accountId: fromAccount?.id,
+                              toAccountId: toAccount?.id,
                               account: fromAccount?.accountGroup ?? "",
                               category: "Transfer",
                               amount: double.parse(_amount.text),
@@ -654,18 +659,12 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                               transaction);
 
                           double amountSpentOrReceived = double.parse(_amount.text);
-                          double amountLastTransaction = amount;
 
                           if (transactType == "Expense") {
 
                             amountSpentOrReceived *= -1;
                           }
 
-                          if (transactType == "Income") {
-                            amountLastTransaction *= -1;
-                          }
-
-                          BudgetExpenseDatabase.instance.updateAccountAmount(selectedAccount?.id, amountLastTransaction, true);
                           BudgetExpenseDatabase.instance.updateAccountAmount(selectedAccount?.id, amountSpentOrReceived, true);
 
                         }
@@ -741,23 +740,44 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                               style: TextStyle(color: Colors.black, fontSize:15)),
                           Row(
                             children: [
-                              selecting == "Category" ? IconButton(iconSize: 20, onPressed: () {
-                                setState(() {
-                                  Navigator.push(context, MaterialPageRoute(
+                              selecting == "Category" ? IconButton(iconSize: 20, onPressed: () async {
+
+                                  bool result = await Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) => CategoryDataPage(isDelete: true, transactType : transactType),
                                   ));
-                                });
+
+                                  if(result != null && result){
+                                    setState(() {
+                                      initPrefs();
+                                    });
+                                  }
+
+
                               }, icon: Icon(Icons.delete)) : SizedBox(),
-                              IconButton(iconSize: 20, onPressed: () {
-                                setState(() {
-                                  if (selecting == "Accounts") {
-                                    Navigator.pushNamed(context, '/accountDataPage');
+                              IconButton(iconSize: 20, onPressed: () async {
+
+                                  if (selecting == "Accounts" || selecting == "From" || selecting == "To") {
+                                    bool result = await Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => AccountDataPage(),
+                                    ));
+
+                                    if(result != null && result){
+                                      setState(() {
+                                        getAccounts();
+                                      });
+                                    };
                                   } else if (selecting == "Category") {
-                                    Navigator.push(context, MaterialPageRoute(
+
+                                    bool result = await Navigator.of(context).push(MaterialPageRoute(
                                       builder: (context) => CategoryDataPage(isDelete: false, transactType : transactType),
                                     ));
-                                  }
-                                });
+
+                                    if(result != null && result){
+                                      setState(() {
+                                        initPrefs();
+                                      });
+                                    };
+                                  };
                               }, icon: Icon(Icons.edit)),
                               IconButton(iconSize: 20, onPressed: () {
                                 setState(() {

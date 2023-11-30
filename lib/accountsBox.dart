@@ -34,8 +34,11 @@ class AccountBox extends StatelessWidget {
               SizedBox(
                   height: 30
               ),
-              Text(name,
-                  style: TextStyle(color: Colors.white, fontSize:25, fontWeight: FontWeight.bold)),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(name,
+                    style: TextStyle(color: Colors.white, fontSize:25, fontWeight: FontWeight.bold)),
+              ),
               SizedBox(
                   height:15
               ),

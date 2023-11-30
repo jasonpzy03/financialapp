@@ -115,9 +115,7 @@ class _CategoryDataPageState extends State<CategoryDataPage> {
                   IconButton(
                       icon: Icon(Icons.arrow_back, color: Colors.white, size: 30),
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => HomePage(1),
-                        ));
+                        Navigator.pop(context);
                       }
                   ),
                   SizedBox(
@@ -171,8 +169,8 @@ class _CategoryDataPageState extends State<CategoryDataPage> {
             Padding(
               padding: const EdgeInsets.all(40.0),
               child: GestureDetector(
-                onTap: () {
-                  setState(() async {
+                onTap: () async {
+
                     if (isDelete) {
                       if (transactType == "Expense") {
                         expenseCategories.remove(_name.text);
@@ -191,10 +189,8 @@ class _CategoryDataPageState extends State<CategoryDataPage> {
                       }
                     }
 
-                    Navigator.push(context, MaterialPageRoute(
-                      builder: (context) => HomePage(1),
-                    ));
-                  });
+                    Navigator.pop(context, true);
+
                 },
                 child: Container(
                     padding: EdgeInsets.all(10.0),
@@ -230,10 +226,10 @@ class _CategoryDataPageState extends State<CategoryDataPage> {
                 ],
               ),
             ) : SizedBox(),
-            Visibility(
+            isDelete ? Visibility(
                 visible: isVisible,
                 child: generateSelections()
-            )
+            ): SizedBox()
           ]
       ),
     );

@@ -245,9 +245,7 @@ class _TransactionDataPageState extends State<TransactionDataPage> {
                   IconButton(
                       icon: Icon(Icons.arrow_back, color: Colors.white, size: 30),
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => HomePage(1),
-                        ));
+                        Navigator.pop(context);
                       }
                   ),
                   SizedBox(
@@ -662,7 +660,7 @@ class _TransactionDataPageState extends State<TransactionDataPage> {
                             }, icon: Icon(Icons.delete)) : SizedBox(),
                             IconButton(iconSize: 20, onPressed: () {
                               setState(() {
-                                if (selecting == "Accounts") {
+                                if (selecting == "Accounts" || selecting == "From" || selecting == "To") {
                                   Navigator.pushNamed(context, '/accountDataPage');
                                 } else if (selecting == "Category") {
                                   Navigator.push(context, MaterialPageRoute(

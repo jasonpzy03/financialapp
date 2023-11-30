@@ -188,7 +188,7 @@ class _AddBudgetPageState extends State<AddBudgetPage> {
                   IconButton(
                       icon: Icon(Icons.arrow_back, color: Colors.white, size: 30),
                       onPressed: () {
-                        Navigator.pushNamed(context,'/budgetsPage');
+                        Navigator.pop(context);
                       }
                   ),
                   SizedBox(

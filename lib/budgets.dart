@@ -120,9 +120,7 @@ class _BudgetsPageState extends State<BudgetsPage> {
                       IconButton(
                           icon: Icon(Icons.arrow_back, color: Colors.white, size: 30),
                           onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(
-                              builder: (context) => HomePage(1),
-                            ));
+                            Navigator.pop(context);
                           }
                       ),
                       SizedBox(

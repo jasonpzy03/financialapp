@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:ui_practice_1/categoryData.dart';
-import 'package:ui_practice_1/editTransactionPage.dart';
 import 'package:ui_practice_1/statistics.dart';
-import 'package:ui_practice_1/transactionspage.dart';
 import '../homepage.dart';
 import '../transactionData.dart';
 import 'package:page_transition/page_transition.dart';

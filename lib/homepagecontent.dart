@@ -188,8 +188,9 @@ class _HomePageContentState extends State<HomePageContent> {
                     style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
                 GestureDetector(
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(
-                      builder: (context) => HomePage(1),
+                    Navigator.push(context, PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) => HomePage(1),
+                      transitionDuration: Duration(seconds: 0),
                     ));
                   },
                   child: Text("See more",
@@ -284,8 +285,9 @@ class _HomePageContentState extends State<HomePageContent> {
                     style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
                 GestureDetector(
                   onTap: () {
-                      Navigator.push(context, MaterialPageRoute(
-                        builder: (context) => HomePage(2),
+                      Navigator.push(context, PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) => HomePage(2),
+                        transitionDuration: Duration(seconds: 0),
                       ));
                   },
                   child: Text("See more",
@@ -301,8 +303,9 @@ class _HomePageContentState extends State<HomePageContent> {
             padding: const EdgeInsets.symmetric(horizontal: 30.0),
             child: GestureDetector(
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(
-                  builder: (context) => HomePage(2),
+                Navigator.push(context, PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) => HomePage(2),
+                  transitionDuration: Duration(seconds: 0),
                 ));
               },
               child: Container(
