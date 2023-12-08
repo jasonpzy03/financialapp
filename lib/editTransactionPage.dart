@@ -48,8 +48,6 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
   List<String> keyboard = ["1", "2", "3", "Backspace", "4", "5", "6", "", "7", "8", "9", "", "", "0", ".", "Done"];
   List<Widget> selections = [];
 
-  Color underlineColor = Colors.red.shade300;
-
   late int id;
   late DateTime date;
   late int accountId;
@@ -141,21 +139,22 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                 FocusScope.of(context).requestFocus(_fourthFocusNode);
               });
             },
-            child: Container(
-                width: MediaQuery.of(context).size.width * 0.33,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Color.fromRGBO(35, 38, 51, 1.0),
-                  border: Border.all(
-                    color: Colors.white10, // Border color
-                    width: 1.0, // Border width
+            child: Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: Container(
+                  width: MediaQuery.of(context).size.width * 0.30,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+
                   ),
-                ),
-                child:
-                Center(
-                  child: Text(selectedCategory[i],
-                      style: TextStyle(color: Colors.white, fontSize:15)),
-                )
+                  child:
+                  Center(
+                    child: Text(selectedCategory[i],
+                        style: TextStyle(color: Color.fromRGBO(1, 58, 85, 1), fontSize:15, fontWeight: FontWeight.bold)),
+                  )
+              ),
             ),
           ),
         );
@@ -184,21 +183,21 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
 
               });
             },
-            child: Container(
-                width: MediaQuery.of(context).size.width * 0.33,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Color.fromRGBO(35, 38, 51, 1.0),
-                  border: Border.all(
-                    color: Colors.white10, // Border color
-                    width: 1.0, // Border width
+            child: Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: Container(
+                  width: MediaQuery.of(context).size.width * 0.3,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
                   ),
-                ),
-                child:
-                Center(
-                  child: Text(entry.value.name,
-                      style: TextStyle(color: Colors.white, fontSize:15)),
-                )
+                  child:
+                  Center(
+                    child: Text(entry.value.name,
+                        style: TextStyle(color: Color.fromRGBO(1, 58, 85, 1), fontSize:15, fontWeight: FontWeight.bold)),
+                  )
+              ),
             ),
           ),
         );
@@ -233,21 +232,21 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
 
               });
             },
-            child: Container(
-                width: MediaQuery.of(context).size.width * 0.25,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: (keyboard[i] == "" ? Colors.white10 : (keyboard[i] == "Done" && transactType == "Income") ? Colors.blue : (keyboard[i] == "Done" && transactType == "Expense") ? Colors.red.shade300 : (keyboard[i] == "Done" && transactType == "Transfer") ? Colors.white : Color.fromRGBO(35, 38, 51, 1.0)),
-                  border: Border.all(
-                    color: Colors.white10, // Border color
-                    width: 1.0, // Border width
+            child: Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: Container(
+                  width: MediaQuery.of(context).size.width * 0.20,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: (keyboard[i] == "" ? Colors.white10 : keyboard[i] == "Done" ? Color.fromRGBO(1, 58, 85, 1) : Colors.white),
                   ),
-                ),
-                child:
-                Center(
-                  child: (keyboard[i] == "Backspace" ? Icon(Icons.backspace, color: Colors.white,) :  Text(keyboard[i],
-                      style: TextStyle(color: (keyboard[i] == "Done" && transactType == "Transfer" ? Colors.grey[800] : Colors.white),  fontSize: (keyboard[i] == "Done" ? 20 : 25)))),
-                )
+                  child:
+                  Center(
+                    child: (keyboard[i] == "Backspace" ? Icon(Icons.backspace, color: Color.fromRGBO(1, 58, 85, 1),) :  Text(keyboard[i],
+                        style: TextStyle(color: keyboard[i] == "Done" ? Colors.white : Color.fromRGBO(1, 58, 85, 1),  fontSize: (keyboard[i] == "Done" ? 20 : 25)))),
+                  )
+              ),
             ),
           ),
         );
@@ -257,13 +256,16 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
 
     // Return the list of widgets
     return Expanded(
-      child: ListView(
-          padding: EdgeInsets.zero,
-          physics: BouncingScrollPhysics(),
-          children: [Wrap(
-
-              children: selections
-          ),]
+      child: Padding(
+        padding: const EdgeInsets.only(top: 5.0, left: 10.0, right: 10.0),
+        child: ListView(
+            padding: EdgeInsets.zero,
+            physics: BouncingScrollPhysics(),
+            children: [Wrap(
+                alignment: WrapAlignment.center,
+                children: selections
+            ),]
+        ),
       ),
     );
   }
@@ -273,7 +275,7 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
   Widget build(BuildContext context) {
     return isLoading ? Center(child: const CircularProgressIndicator()) : Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Color.fromRGBO(35, 38, 51, 1.0),
+      backgroundColor: Color.fromRGBO(246, 247, 252, 1),
       body: Column(
           children: [
             Container(
@@ -281,7 +283,7 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
               child: Row(
                 children: [
                   IconButton(
-                      icon: Icon(Icons.arrow_back, color: Colors.white, size: 30),
+                      icon: Icon(Icons.arrow_back, color: Color.fromRGBO(1, 58, 85, 1), size: 30),
                       onPressed: () {
                         Navigator.pop(context);
                       }
@@ -290,7 +292,7 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                       width: 10
                   ),
                   Text(transactType,
-                      style: TextStyle(color: Colors.white, fontSize:30, fontWeight: FontWeight.bold)),
+                      style: TextStyle(color: Color.fromRGBO(1, 58, 85, 1), fontSize:30, fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
@@ -309,21 +311,22 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                         transactType = "Income";
                         _account.text = "";
                         _category.text = "";
-                        underlineColor = Colors.blue;
                       });
                     },
                     child: Container(
                         padding: EdgeInsets.only(top: 10, bottom: 10, left: 25, right: 25),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          color: (transactType == "Income" ? Color.fromRGBO(35, 38, 51, 1.0) : Colors.black),
-                          border: Border.all(
-                            color: (transactType == "Income" ? Colors.blue : Colors.white10), // Border color
-                            width: 1.5, // Border width
-                          ),
+                          borderRadius: BorderRadius.circular(10),
+                          color: (transactType == "Income" ? Color.fromRGBO(1, 58, 85, 1) : Colors.white),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.blueGrey.shade50,
+                              offset: Offset(0.0, 5.0),
+                              blurRadius: 5.0,),
+                          ],
                         ),
                         child:
-                        Text("Income", style: TextStyle(color: (transactType == "Income" ? Colors.blue : Colors.white60), fontSize:15, fontWeight: FontWeight.bold))
+                        Text("Income", style: TextStyle(color: (transactType == "Income" ? Colors.white : Color.fromRGBO(1, 58, 85, 1)), fontSize:16, fontWeight: FontWeight.bold))
                     ),
                   ),
                   GestureDetector(
@@ -333,21 +336,16 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                         transactType = "Expense";
                         _account.text = "";
                         _category.text = "";
-                        underlineColor = Colors.red.shade300;
                       });
                     },
                     child: Container(
                         padding: EdgeInsets.only(top: 10, bottom: 10, left: 25, right: 25),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          color: (transactType == "Expense" ? Color.fromRGBO(35, 38, 51, 1.0) : Colors.black),
-                          border: Border.all(
-                            color: (transactType == "Expense" ? Colors.red.shade300 : Colors.white10), // Border color
-                            width: 1.5, // Border width
-                          ),
+                          borderRadius: BorderRadius.circular(10),
+                          color: (transactType == "Expense" ? Color.fromRGBO(1, 58, 85, 1) : Colors.white),
                         ),
                         child:
-                        Text("Expense", style: TextStyle(color: (transactType == "Expense" ? Colors.red.shade300 : Colors.white60), fontSize:15, fontWeight: FontWeight.bold))
+                        Text("Expense", style: TextStyle(color: (transactType == "Expense" ? Colors.white : Color.fromRGBO(1, 58, 85, 1)), fontSize:16, fontWeight: FontWeight.bold))
                     ),
                   ),
                   GestureDetector(
@@ -355,28 +353,24 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                       setState(() {
                         isVisible = false;
                         transactType = "Transfer";
-                        underlineColor = Colors.white;
+
                       });
                     },
                     child: Container(
                         padding: EdgeInsets.only(top: 10, bottom: 10, left: 25, right: 25),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          color: (transactType == "Transfer" ? Color.fromRGBO(35, 38, 51, 1.0) : Colors.black),
-                          border: Border.all(
-                            color: (transactType == "Transfer" ? Colors.white : Colors.white10), // Border color
-                            width: 1.5, // Border width
-                          ),
+                          borderRadius: BorderRadius.circular(10),
+                          color: (transactType == "Transfer" ? Color.fromRGBO(1, 58, 85, 1) : Colors.white),
                         ),
                         child:
-                        Text("Transfer", style: TextStyle(color: (transactType == "Transfer" ? Colors.white : Colors.white60), fontSize:15, fontWeight: FontWeight.bold))
+                        Text("Transfer", style: TextStyle(color: (transactType == "Transfer" ? Colors.white : Color.fromRGBO(1, 58, 85, 1)), fontSize:16, fontWeight: FontWeight.bold))
                     ),
                   )
                 ],
               ),
             ),
             Container(
-              height: 200,
+              height: 255,
               child: Scrollbar(
                 thumbVisibility: true,
                 child: ListView(
@@ -390,23 +384,23 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                             width: 100,
                             child:
                             Text("Date",
-                                style: TextStyle(color: Colors.white60, fontSize:15)),
+                                style: TextStyle(color: Colors.grey[800], fontSize:15)),
                           ),
                           Expanded(
                             child: TextField(
                                 controller: _date,
                                 focusNode: _firstFocusNode,
-                                cursorColor: Colors.white,
+                                cursorColor: Colors.grey[800],
                                 readOnly: true,
-                                style: TextStyle(color: Colors.white, fontSize:15),
+                                style: TextStyle(color: Colors.grey[800], fontSize:15),
                                 decoration: InputDecoration(
                                   enabledBorder: UnderlineInputBorder(
                                     borderSide: BorderSide(
-                                        color: Colors.white10,
+                                        color: Color.fromRGBO(1, 58, 85, 1),
                                         width: 2.0),),
                                   focusedBorder: UnderlineInputBorder(
                                     borderSide: BorderSide(
-                                        color: underlineColor,
+                                        color: Colors.black,
                                         width: 2.0),),
                                 ),
                                 onTap: () async {
@@ -438,23 +432,23 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                             width: 100,
                             child:
                             Text((transactType == "Transfer" ? "From" : "Account"),
-                                style: TextStyle(color: Colors.white60, fontSize:15)),
+                                style: TextStyle(color: Colors.grey[800], fontSize:15)),
                           ),
                           Expanded(
                             child: TextField(
                                 controller: (transactType == "Transfer" ? _from : _account),
                                 focusNode: _secondFocusNode,
-                                cursorColor: Colors.white,
+                                cursorColor: Colors.grey[800],
                                 readOnly: true,
-                                style: TextStyle(color: Colors.white, fontSize:15),
+                                style: TextStyle(color: Colors.grey[800], fontSize:15),
                                 decoration: InputDecoration(
                                   enabledBorder: UnderlineInputBorder(
                                     borderSide: BorderSide(
-                                        color: Colors.white10,
+                                        color: Color.fromRGBO(1, 58, 85, 1),
                                         width: 2.0),),
                                   focusedBorder: UnderlineInputBorder(
                                     borderSide: BorderSide(
-                                        color: underlineColor,
+                                        color: Colors.black,
                                         width: 2.0),),
                                 ),
                                 onTap: () async {
@@ -480,23 +474,23 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                             width: 100,
                             child:
                             Text((transactType == "Transfer" ? "To" : "Category"),
-                                style: TextStyle(color: Colors.white60, fontSize:15)),
+                                style: TextStyle(color: Colors.grey[800], fontSize:15)),
                           ),
                           Expanded(
                             child: TextField(
                                 controller: (transactType == "Transfer" ? _to : _category),
                                 focusNode: _thirdFocusNode,
-                                cursorColor: Colors.white,
+                                cursorColor: Colors.grey[800],
                                 readOnly: true,
-                                style: TextStyle(color: Colors.white, fontSize:15),
+                                style: TextStyle(color: Colors.grey[800], fontSize:15),
                                 decoration: InputDecoration(
                                   enabledBorder: UnderlineInputBorder(
                                     borderSide: BorderSide(
-                                        color: Colors.white10,
+                                        color: Color.fromRGBO(1, 58, 85, 1),
                                         width: 2.0),),
                                   focusedBorder: UnderlineInputBorder(
                                     borderSide: BorderSide(
-                                        color: underlineColor,
+                                        color: Colors.black,
                                         width: 2.0),),
                                 ),
                                 onTap: () async {
@@ -524,23 +518,23 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                             width: 100,
                             child:
                             Text("Amount",
-                                style: TextStyle(color: Colors.white60, fontSize:15)),
+                                style: TextStyle(color: Colors.grey[800], fontSize:15)),
                           ),
                           Expanded(
                             child: TextField(
                                 controller: _amount,
                                 focusNode: _fourthFocusNode,
-                                cursorColor: Colors.white,
+                                cursorColor: Colors.grey[800],
                                 readOnly: true,
-                                style: TextStyle(color: Colors.white, fontSize:15),
+                                style: TextStyle(color: Colors.grey[800], fontSize:15),
                                 decoration: InputDecoration(
                                   enabledBorder: UnderlineInputBorder(
                                     borderSide: BorderSide(
-                                        color: Colors.white10,
+                                        color: Color.fromRGBO(1, 58, 85, 1),
                                         width: 2.0),),
                                   focusedBorder: UnderlineInputBorder(
                                     borderSide: BorderSide(
-                                        color: underlineColor,
+                                        color: Colors.black,
                                         width: 2.0),),
                                 ),
                                 onTap: () async {
@@ -563,22 +557,22 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                             width: 100,
                             child:
                             Text("Note",
-                                style: TextStyle(color: Colors.white60, fontSize:15)),
+                                style: TextStyle(color: Colors.grey[800], fontSize:15)),
                           ),
                           Expanded(
                             child: TextField(
                                 controller: _note,
                                 focusNode: _fifthFocusNode,
-                                cursorColor: Colors.white,
-                                style: TextStyle(color: Colors.white, fontSize:15),
+                                cursorColor: Colors.grey[800],
+                                style: TextStyle(color: Colors.grey[800], fontSize:15),
                                 decoration: InputDecoration(
                                   enabledBorder: UnderlineInputBorder(
                                     borderSide: BorderSide(
-                                        color: Colors.white10,
+                                        color: Color.fromRGBO(1, 58, 85, 1),
                                         width: 2.0),),
                                   focusedBorder: UnderlineInputBorder(
                                     borderSide: BorderSide(
-                                        color: underlineColor,
+                                        color: Colors.black,
                                         width: 2.0),),
                                 ),
                                 onTap: () async {
@@ -599,7 +593,7 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
               ),
             ),
             SizedBox(
-                height: 40
+                height: 10
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -677,11 +671,11 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                         padding: EdgeInsets.all(10.0),
                         width: MediaQuery.of(context).size.width * 0.35,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          color: underlineColor,
+                          borderRadius: BorderRadius.circular(10),
+                          color: Color.fromRGBO(1, 58, 85, 1),
                         ),
                         child: Text("Update",
-                          style: TextStyle(color: (transactType == "Transfer" ? Colors.black : Colors.white), fontSize:20), textAlign: TextAlign.center,)
+                          style: TextStyle(color: Colors.white, fontSize:20), textAlign: TextAlign.center,)
                     ),
                   ),
                 GestureDetector(
@@ -712,7 +706,7 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
                         padding: EdgeInsets.all(10.0),
                         width: MediaQuery.of(context).size.width * 0.35,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
+                          borderRadius: BorderRadius.circular(10),
                           color: Colors.grey,
                         ),
                         child: Text("Delete",
@@ -722,72 +716,84 @@ class _TransactionEditPageState extends State<TransactionEditPage> {
               ],
             ),
             SizedBox(
-                height: 40
+                height: 15
             ),
             Visibility(
               visible: isVisible,
               child: Column(
                 children: [
-                  Container(
-                      padding: EdgeInsets.symmetric(horizontal: 15.0),
-                      width: MediaQuery.of(context).size.width,
-                      color: Colors.grey,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 15.0),
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.blueGrey.shade50,
+                                offset: Offset(0.0, 10.0),
+                                blurRadius: 5.0,),
+                            ]),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
 
-                          Text(selecting,
-                              style: TextStyle(color: Colors.black, fontSize:15)),
-                          Row(
-                            children: [
-                              selecting == "Category" ? IconButton(iconSize: 20, onPressed: () async {
-
-                                  bool result = await Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => CategoryDataPage(isDelete: true, transactType : transactType),
-                                  ));
-
-                                  if(result != null && result){
-                                    setState(() {
-                                      initPrefs();
-                                    });
-                                  }
-
-
-                              }, icon: Icon(Icons.delete)) : SizedBox(),
-                              IconButton(iconSize: 20, onPressed: () async {
-
-                                  if (selecting == "Accounts" || selecting == "From" || selecting == "To") {
-                                    bool result = await Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => AccountDataPage(),
-                                    ));
-
-                                    if(result != null && result){
-                                      setState(() {
-                                        getAccounts();
-                                      });
-                                    };
-                                  } else if (selecting == "Category") {
+                            Text(selecting,
+                                style: TextStyle(color: Color.fromRGBO(1, 58, 85, 1), fontSize:15, fontWeight: FontWeight.bold)),
+                            Row(
+                              children: [
+                                selecting == "Category" ? IconButton(iconSize: 20, onPressed: () async {
 
                                     bool result = await Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => CategoryDataPage(isDelete: false, transactType : transactType),
+                                      builder: (context) => CategoryDataPage(isDelete: true, transactType : transactType),
                                     ));
 
                                     if(result != null && result){
                                       setState(() {
                                         initPrefs();
                                       });
+                                    }
+
+
+                                }, icon: Icon(Icons.delete)) : SizedBox(),
+                                selecting == "Category" || selecting == "Accounts" ? IconButton(iconSize: 20, onPressed: () async {
+
+                                    if (selecting == "Accounts" || selecting == "From" || selecting == "To") {
+                                      bool result = await Navigator.of(context).push(MaterialPageRoute(
+                                        builder: (context) => AccountDataPage(),
+                                      ));
+
+                                      if(result != null && result){
+                                        setState(() {
+                                          initPrefs();
+                                          getAccounts();
+                                        });
+                                      };
+                                    } else if (selecting == "Category") {
+
+                                      bool result = await Navigator.of(context).push(MaterialPageRoute(
+                                        builder: (context) => CategoryDataPage(isDelete: false, transactType : transactType),
+                                      ));
+
+                                      if(result != null && result){
+                                        setState(() {
+                                          initPrefs();
+                                        });
+                                      };
                                     };
-                                  };
-                              }, icon: Icon(Icons.edit)),
-                              IconButton(iconSize: 20, onPressed: () {
-                                setState(() {
-                                  isVisible = false;
-                                });
-                              }, icon: Icon(Icons.close))
-                            ],
-                          ),
-                        ],
-                      )
+                                }, icon: Icon(Icons.edit)) : SizedBox(),
+                                IconButton(iconSize: 20, onPressed: () {
+                                  setState(() {
+                                    isVisible = false;
+                                  });
+                                }, icon: Icon(Icons.close))
+                              ],
+                            ),
+                          ],
+                        )
+                    ),
                   ),
                 ],
               ),

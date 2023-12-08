@@ -24,7 +24,7 @@ class _MorePageState extends State<MorePage> {
         children: [
           Row(
             children: [
-              Text("Settings", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),)
+              Text("Settings", style: TextStyle(color: Color.fromRGBO(1, 58, 85, 1), fontWeight: FontWeight.bold, fontSize: 30),)
             ],
           ),
           SizedBox(
@@ -38,8 +38,8 @@ class _MorePageState extends State<MorePage> {
             // Clear all key-value pairs in shared preferences
             await prefs.clear();
 
-          }, icon: Icon(Icons.restart_alt, color: Colors.white, size: 25,)),
-          Text("Reset Database", style: TextStyle(color: Colors.white),)
+          }, icon: Icon(Icons.restart_alt, color: Color.fromRGBO(1, 58, 85, 1), size: 25,)),
+          Text("Reset Database", style: TextStyle(color: Color.fromRGBO(1, 58, 85, 1)),)
         ],
       ),
     );

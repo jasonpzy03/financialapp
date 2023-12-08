@@ -24,7 +24,7 @@ class _AccountDataPageState extends State<AccountDataPage> {
   final FocusNode _fourthFocusNode = FocusNode();
 
   bool isVisible = false;
-  String selecting = "Account Group";
+  String selecting = "";
 
   List<String> accountGroups = ["Cash", "Accounts", "Card", "Debit Card", "Savings", "Top-Up/Prepaid", "Investments", "Overdrafts", "Loan", "Insurance", "Others"];
   List<String> keyboard = ["1", "2", "3", "Backspace", "4", "5", "6", "-", "7", "8", "9", "", "", "0", ".", "Done"];
@@ -44,21 +44,21 @@ class _AccountDataPageState extends State<AccountDataPage> {
                 FocusScope.of(context).requestFocus(_secondFocusNode);
               });
             },
-            child: Container(
-                width: MediaQuery.of(context).size.width * 0.33,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Color.fromRGBO(35, 38, 51, 1.0),
-                  border: Border.all(
-                    color: Colors.white10, // Border color
-                    width: 1.0, // Border width
+            child: Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: Container(
+                  width: MediaQuery.of(context).size.width * 0.30,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
                   ),
-                ),
-                child:
-                Center(
-                  child: Text(accountGroups[i],
-                      style: TextStyle(color: Colors.white, fontSize:15)),
-                )
+                  child:
+                  Center(
+                    child: Text(accountGroups[i],
+                        style: TextStyle(color: Color.fromRGBO(1, 58, 85, 1), fontSize:16, fontWeight: FontWeight.bold)),
+                  )
+              ),
             ),
           ),
         );
@@ -101,26 +101,21 @@ class _AccountDataPageState extends State<AccountDataPage> {
                 }
               });
             },
-            child: Container(
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width * 0.25,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: keyboard[i] == "" ? Colors.white10 : Color.fromRGBO(35, 38, 51, 1.0),
-                  border: Border.all(
-                    color: Colors.white10, // Border color
-                    width: 1.0, // Border width
+            child: Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: Container(
+                  width: MediaQuery.of(context).size.width * 0.20,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: (keyboard[i] == "" ? Colors.white10 : keyboard[i] == "Done" ? Color.fromRGBO(1, 58, 85, 1) : Colors.white),
                   ),
-                ),
-                child:
-                Center(
-                  child: (keyboard[i] == "Backspace" ? Icon(
-                    Icons.backspace, color: Colors.white,) : Text(keyboard[i],
-                      style: TextStyle(color: Colors.white,
-                          fontSize: (keyboard[i] == "Done" ? 20 : 25)))),
-                )
+                  child:
+                  Center(
+                    child: (keyboard[i] == "Backspace" ? Icon(Icons.backspace, color: Color.fromRGBO(1, 58, 85, 1),) :  Text(keyboard[i],
+                        style: TextStyle(color: keyboard[i] == "Done" ? Colors.white : Color.fromRGBO(1, 58, 85, 1),  fontSize: (keyboard[i] == "Done" ? 20 : 25)))),
+                  )
+              ),
             ),
           ),
         );
@@ -133,7 +128,7 @@ class _AccountDataPageState extends State<AccountDataPage> {
           padding: EdgeInsets.zero,
           physics: BouncingScrollPhysics(),
           children: [Wrap(
-
+              alignment: WrapAlignment.center,
               children: selections
           ),]
       ),
@@ -144,7 +139,7 @@ class _AccountDataPageState extends State<AccountDataPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Color.fromRGBO(35, 38, 51, 1.0),
+      backgroundColor: Color.fromRGBO(246, 247, 252, 1),
       body: Column(
           children: [
             Container(
@@ -152,7 +147,7 @@ class _AccountDataPageState extends State<AccountDataPage> {
               child: Row(
                 children: [
                   IconButton(
-                      icon: Icon(Icons.arrow_back, color: Colors.white, size: 30),
+                      icon: Icon(Icons.arrow_back, color: Color.fromRGBO(1, 58, 85, 1), size: 30),
                       onPressed: () {
                         Navigator.pop(context);
                       }
@@ -161,7 +156,7 @@ class _AccountDataPageState extends State<AccountDataPage> {
                       width: 10
                   ),
                   Text("Add Account",
-                      style: TextStyle(color: Colors.white, fontSize:30, fontWeight: FontWeight.bold)),
+                      style: TextStyle(color: Color.fromRGBO(1, 58, 85, 1), fontSize:30, fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
@@ -176,23 +171,23 @@ class _AccountDataPageState extends State<AccountDataPage> {
                     width: 100,
                     child:
                     Text("Group",
-                        style: TextStyle(color: Colors.white60, fontSize:15)),
+                        style: TextStyle(color: Colors.grey[800], fontSize:15)),
                   ),
                   Expanded(
                     child: TextField(
                         controller: _group,
                         focusNode: _firstFocusNode,
-                        cursorColor: Colors.white,
+                        cursorColor: Colors.grey[800],
                         readOnly: true,
-                        style: TextStyle(color: Colors.white, fontSize:15),
+                        style: TextStyle(color: Colors.grey[800], fontSize:15),
                         decoration: InputDecoration(
                           enabledBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
-                                color: Colors.white10,
+                                color: Color.fromRGBO(1, 58, 85, 1),
                                 width: 2.0),),
                           focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
-                                color: Colors.blue,
+                                color: Colors.black,
                                 width: 2.0),),
                         ),
                         onTap: () async {
@@ -214,22 +209,22 @@ class _AccountDataPageState extends State<AccountDataPage> {
                     width: 100,
                     child:
                     Text("Name",
-                        style: TextStyle(color: Colors.white60, fontSize:15)),
+                        style: TextStyle(color: Colors.grey[800], fontSize:15)),
                   ),
                   Expanded(
                     child: TextField(
                         controller: _name,
                         focusNode: _secondFocusNode,
-                        cursorColor: Colors.white,
-                        style: TextStyle(color: Colors.white, fontSize:15),
+                        cursorColor: Colors.grey[800],
+                        style: TextStyle(color: Colors.grey[800], fontSize:15),
                         decoration: InputDecoration(
                           enabledBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
-                                color: Colors.white10,
+                                color: Color.fromRGBO(1, 58, 85, 1),
                                 width: 2.0),),
                           focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
-                                color: Colors.blue,
+                                color: Colors.black,
                                 width: 2.0),),
                         ),
                         onTap: () async {
@@ -250,28 +245,31 @@ class _AccountDataPageState extends State<AccountDataPage> {
                     width: 100,
                     child:
                     Text("Amount",
-                        style: TextStyle(color: Colors.white60, fontSize:15)),
+                        style: TextStyle(color: Colors.grey[800], fontSize:15)),
                   ),
                   Expanded(
                     child: TextField(
                         controller: _amount,
                         focusNode: _thirdFocusNode,
-                        cursorColor: Colors.white,
+                        cursorColor: Colors.grey[800],
                         readOnly: true,
-                        style: TextStyle(color: Colors.white, fontSize:15),
+                        style: TextStyle(color: Colors.grey[800], fontSize:15),
                         decoration: InputDecoration(
                           enabledBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
-                                color: Colors.white10,
+                                color: Color.fromRGBO(1, 58, 85, 1),
                                 width: 2.0),),
                           focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
-                                color: Colors.blue,
+                                color: Colors.black,
                                 width: 2.0),),
                         ),
                         onTap: () async {
-                          isVisible = true;
-                          selecting = "Amount";
+                          setState(() {
+                            isVisible = true;
+                            selecting = "Amount";
+                          });
+
                         }
                     ),
                   ),
@@ -286,22 +284,22 @@ class _AccountDataPageState extends State<AccountDataPage> {
                     width: 100,
                     child:
                     Text("Description",
-                        style: TextStyle(color: Colors.white60, fontSize:15)),
+                        style: TextStyle(color: Colors.grey[800], fontSize:15)),
                   ),
                   Expanded(
                     child: TextField(
                       controller: _description,
                         focusNode: _fourthFocusNode,
-                        cursorColor: Colors.white,
-                        style: TextStyle(color: Colors.white, fontSize:15),
+                        cursorColor: Colors.grey[800],
+                        style: TextStyle(color: Colors.grey[800], fontSize:15),
                         decoration: InputDecoration(
                           enabledBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
-                                color: Colors.white10,
+                                color: Color.fromRGBO(1, 58, 85, 1),
                                 width: 2.0),),
                           focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
-                                color: Colors.blue,
+                                color: Colors.black,
                                 width: 2.0),),
                         ),
                         onTap: () async {
@@ -327,15 +325,17 @@ class _AccountDataPageState extends State<AccountDataPage> {
                   );
                   BudgetExpenseDatabase.instance.createAccount(account);
 
-                  Navigator.pop(context, true);
+                  Navigator.push(context, MaterialPageRoute(
+                      builder: (context) => HomePage(2),
+                  ));
 
                 },
                 child: Container(
                     padding: EdgeInsets.all(10.0),
                     width: MediaQuery.of(context).size.width / 2,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(10),
+                      color: Color.fromRGBO(1, 58, 85, 1),
                     ),
                     child: Text("Save",
                       style: TextStyle(color: Colors.white, fontSize:20), textAlign: TextAlign.center,)
@@ -346,22 +346,33 @@ class _AccountDataPageState extends State<AccountDataPage> {
               visible: isVisible,
               child: Column(
                 children: [
-                  Container(
-                      padding: EdgeInsets.symmetric(horizontal: 15.0),
-                      width: MediaQuery.of(context).size.width,
-                      color: Colors.grey,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(selecting,
-                              style: TextStyle(color: Colors.black, fontSize:15)),
-                          IconButton(iconSize: 20, onPressed: () {
-                            setState(() {
-                              isVisible = false;
-                            });
-                          }, icon: Icon(Icons.close))
-                        ],
-                      )
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 15.0),
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.blueGrey.shade50,
+                                offset: Offset(0.0, 10.0),
+                                blurRadius: 5.0,),
+                            ]),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(selecting,
+                                style: TextStyle(color: Color.fromRGBO(1, 58, 85, 1), fontSize:15, fontWeight: FontWeight.bold)),
+                            IconButton(iconSize: 20, onPressed: () {
+                              setState(() {
+                                isVisible = false;
+                              });
+                            }, icon: Icon(Icons.close))
+                          ],
+                        )
+                    ),
                   ),
                 ],
               ),

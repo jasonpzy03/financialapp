@@ -91,21 +91,22 @@ class _AddBudgetPageState extends State<AddBudgetPage> {
                 FocusScope.of(context).requestFocus(_secondFocusNode);
               });
             },
-            child: Container(
-                width: MediaQuery.of(context).size.width * 0.33,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Color.fromRGBO(35, 38, 51, 1.0),
-                  border: Border.all(
-                    color: Colors.white10, // Border color
-                    width: 1.0, // Border width
+            child: Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: Container(
+                  width: MediaQuery.of(context).size.width * 0.30,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+
                   ),
-                ),
-                child:
-                Center(
-                  child: Text(categories[i],
-                      style: TextStyle(color: Colors.white, fontSize:15)),
-                )
+                  child:
+                  Center(
+                    child: Text(categories[i],
+                        style: TextStyle(color: Color.fromRGBO(1, 58, 85, 1), fontSize:15, fontWeight: FontWeight.bold)),
+                  )
+              ),
             ),
           ),
         );
@@ -139,21 +140,21 @@ class _AddBudgetPageState extends State<AddBudgetPage> {
 
               });
             },
-            child: Container(
-                width: MediaQuery.of(context).size.width * 0.25,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: (keyboard[i] == "" ? Colors.white10 : keyboard[i] == "Done" ? Colors.blue : Color.fromRGBO(35, 38, 51, 1.0)),
-                  border: Border.all(
-                    color: Colors.white10, // Border color
-                    width: 1.0, // Border width
+            child: Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: Container(
+                  width: MediaQuery.of(context).size.width * 0.20,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: (keyboard[i] == "" ? Colors.white10 : keyboard[i] == "Done" ? Color.fromRGBO(1, 58, 85, 1) : Colors.white),
                   ),
-                ),
-                child:
-                Center(
-                  child: (keyboard[i] == "Backspace" ? Icon(Icons.backspace, color: Colors.white,) :  Text(keyboard[i],
-                      style: TextStyle(color: Colors.white,  fontSize: (keyboard[i] == "Done" ? 20 : 25)))),
-                )
+                  child:
+                  Center(
+                    child: (keyboard[i] == "Backspace" ? Icon(Icons.backspace, color: Color.fromRGBO(1, 58, 85, 1),) :  Text(keyboard[i],
+                        style: TextStyle(color: keyboard[i] == "Done" ? Colors.white : Color.fromRGBO(1, 58, 85, 1),  fontSize: (keyboard[i] == "Done" ? 20 : 25)))),
+                  )
+              ),
             ),
           ),
         );
@@ -166,7 +167,7 @@ class _AddBudgetPageState extends State<AddBudgetPage> {
           padding: EdgeInsets.zero,
           physics: BouncingScrollPhysics(),
           children: [Wrap(
-
+              alignment: WrapAlignment.center,
               children: selections
           ),]
       ),
@@ -178,7 +179,7 @@ class _AddBudgetPageState extends State<AddBudgetPage> {
   Widget build(BuildContext context) {
     return isLoading ? Center(child: const CircularProgressIndicator()) : Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Color.fromRGBO(35, 38, 51, 1.0),
+      backgroundColor: Color.fromRGBO(246, 247, 252, 1),
       body: Column(
           children: [
             Container(
@@ -186,7 +187,7 @@ class _AddBudgetPageState extends State<AddBudgetPage> {
               child: Row(
                 children: [
                   IconButton(
-                      icon: Icon(Icons.arrow_back, color: Colors.white, size: 30),
+                      icon: Icon(Icons.arrow_back, color: Color.fromRGBO(1, 58, 85, 1), size: 30),
                       onPressed: () {
                         Navigator.pop(context);
                       }
@@ -195,7 +196,7 @@ class _AddBudgetPageState extends State<AddBudgetPage> {
                       width: 10
                   ),
                   Text((isUpdate ? "Update Budget" : "Add Budget"),
-                      style: TextStyle(color: Colors.white, fontSize:30, fontWeight: FontWeight.bold)),
+                      style: TextStyle(color: Color.fromRGBO(1, 58, 85, 1), fontSize:30, fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
@@ -210,23 +211,23 @@ class _AddBudgetPageState extends State<AddBudgetPage> {
                     width: 100,
                     child:
                     Text("Category",
-                        style: TextStyle(color: Colors.white60, fontSize:15)),
+                        style: TextStyle(color: Colors.grey[800], fontSize:15)),
                   ),
                   Expanded(
                     child: TextField(
                         controller: _category,
                         focusNode: _firstFocusNode,
-                        cursorColor: Colors.white,
+                        cursorColor: Colors.grey[800],
                         readOnly: true,
-                        style: TextStyle(color: Colors.white, fontSize:15),
+                        style: TextStyle(color: Colors.grey[800], fontSize:15),
                         decoration: InputDecoration(
                           enabledBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
-                                color: Colors.white10,
+                                color: Color.fromRGBO(1, 58, 85, 1),
                                 width: 2.0),),
                           focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
-                                color: Colors.white,
+                                color: Colors.black,
                                 width: 2.0),),
                         ),
                         onTap: () async {
@@ -250,23 +251,23 @@ class _AddBudgetPageState extends State<AddBudgetPage> {
                     width: 100,
                     child:
                     Text("Amount",
-                        style: TextStyle(color: Colors.white60, fontSize:15)),
+                        style: TextStyle(color: Colors.grey[800], fontSize:15)),
                   ),
                   Expanded(
                     child: TextField(
                         controller: _amount,
                         focusNode: _secondFocusNode,
-                        cursorColor: Colors.white,
+                        cursorColor: Colors.grey[800],
                         readOnly: true,
-                        style: TextStyle(color: Colors.white, fontSize:15),
+                        style: TextStyle(color: Colors.grey[800], fontSize:15),
                         decoration: InputDecoration(
                           enabledBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
-                                color: Colors.white10,
+                                color: Color.fromRGBO(1, 58, 85, 1),
                                 width: 2.0),),
                           focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
-                                color: Colors.white,
+                                color: Colors.black,
                                 width: 2.0),),
                         ),
                         onTap: () async {
@@ -299,8 +300,8 @@ class _AddBudgetPageState extends State<AddBudgetPage> {
                       padding: EdgeInsets.all(10.0),
                       width: MediaQuery.of(context).size.width * 0.35,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        color: Colors.blue,
+                        borderRadius: BorderRadius.circular(10),
+                        color: Color.fromRGBO(1, 58, 85, 1),
                       ),
                       child: Text((isUpdate ? "Update" : "Add"),
                         style: TextStyle(color: Colors.white, fontSize:20), textAlign: TextAlign.center,)
@@ -336,22 +337,33 @@ class _AddBudgetPageState extends State<AddBudgetPage> {
               visible: isVisible,
               child: Column(
                 children: [
-                  Container(
-                      padding: EdgeInsets.symmetric(horizontal: 15.0),
-                      width: MediaQuery.of(context).size.width,
-                      color: Colors.grey,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(selecting,
-                              style: TextStyle(color: Colors.black, fontSize:15)),
-                          IconButton(iconSize: 20, onPressed: () {
-                            setState(() {
-                              isVisible = false;
-                            });
-                          }, icon: Icon(Icons.close))
-                        ],
-                      )
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 15.0),
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.blueGrey.shade50,
+                                offset: Offset(0.0, 10.0),
+                                blurRadius: 5.0,),
+                            ]),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(selecting,
+                                style: TextStyle(color: Color.fromRGBO(1, 58, 85, 1), fontSize:15, fontWeight: FontWeight.bold)),
+                            IconButton(iconSize: 20, onPressed: () {
+                              setState(() {
+                                isVisible = false;
+                              });
+                            }, icon: Icon(Icons.close))
+                          ],
+                        )
+                    ),
                   ),
                 ],
               ),

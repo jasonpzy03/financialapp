@@ -105,7 +105,7 @@ class _CategoryDataPageState extends State<CategoryDataPage> {
   Widget build(BuildContext context) {
     return isLoading ? Center(child: const CircularProgressIndicator()) : Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Color.fromRGBO(35, 38, 51, 1.0),
+      backgroundColor: Color.fromRGBO(246, 247, 252, 1),
       body: Column(
           children: [
             Container(
@@ -113,7 +113,7 @@ class _CategoryDataPageState extends State<CategoryDataPage> {
               child: Row(
                 children: [
                   IconButton(
-                      icon: Icon(Icons.arrow_back, color: Colors.white, size: 30),
+                      icon: Icon(Icons.arrow_back, color: Color.fromRGBO(1, 58, 85, 1), size: 30),
                       onPressed: () {
                         Navigator.pop(context);
                       }
@@ -122,7 +122,7 @@ class _CategoryDataPageState extends State<CategoryDataPage> {
                       width: 10
                   ),
                   Text((isDelete == true ? "Delete Category" : transactType == "Expense" ? "Expense Category" : "Income Category"),
-                      style: TextStyle(color: Colors.white, fontSize:30, fontWeight: FontWeight.bold)),
+                      style: TextStyle(color: Color.fromRGBO(1, 58, 85, 1), fontSize:30, fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
@@ -137,22 +137,22 @@ class _CategoryDataPageState extends State<CategoryDataPage> {
                     width: 100,
                     child:
                     Text("Name",
-                        style: TextStyle(color: Colors.white60, fontSize:15)),
+                        style: TextStyle(color: Colors.grey[800], fontSize:15)),
                   ),
                   Expanded(
                     child: TextField(
                         controller: _name,
-                        cursorColor: Colors.white,
+                        cursorColor: Colors.grey[800],
                         readOnly: (isDelete ? true: false),
-                        style: TextStyle(color: Colors.white, fontSize:15),
+                        style: TextStyle(color: Colors.grey[800], fontSize:15),
                         decoration: InputDecoration(
                           enabledBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
-                                color: Colors.white10,
+                                color: Color.fromRGBO(1, 58, 85, 1),
                                 width: 2.0),),
                           focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
-                                color: Colors.blue,
+                                color: Colors.black,
                                 width: 2.0),),
 
                         ),
@@ -196,8 +196,8 @@ class _CategoryDataPageState extends State<CategoryDataPage> {
                     padding: EdgeInsets.all(10.0),
                     width: MediaQuery.of(context).size.width / 2,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(10),
+                      color: Color.fromRGBO(1, 58, 85, 1),
                     ),
                     child: Text((isDelete ? "Delete" : "Add"),
                       style: TextStyle(color: Colors.white, fontSize:20), textAlign: TextAlign.center,)

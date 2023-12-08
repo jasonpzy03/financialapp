@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:ui_practice_1/accountspage.dart';
 import '../transactionspage.dart';
 import '../accountsBox.dart';
@@ -7,6 +8,7 @@ import 'package:ui_practice_1/db/budgetexpense.dart';
 import 'package:ui_practice_1/editTransactionPage.dart';
 import 'package:ui_practice_1/model/transaction.dart';
 
+import 'accountData.dart';
 import 'morepage.dart';
 
 class HomePage extends StatefulWidget {
@@ -24,7 +26,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   int _currentIndex = 0;
-
   @override
   void initState() {
     super.initState();
@@ -43,13 +44,16 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(35, 38, 51, 1.0),
-      body: tabs[_currentIndex],
-      floatingActionButton: _currentIndex < 3 && _currentIndex != 0 ? FloatingActionButton(
+      backgroundColor: Color.fromRGBO(246, 247, 252, 1),
+      body: WillPopScope(onWillPop: () async {
+        await SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+        return false;
+      },child: tabs[_currentIndex]),
+      floatingActionButton: _currentIndex == 1 || _currentIndex == 2 ? FloatingActionButton(
           child: Icon(Icons.add),
-          backgroundColor: Colors.blue,
-          onPressed: () {
-            if (_currentIndex < 2) {
+          backgroundColor: Color.fromRGBO(1, 58, 85, 1),
+          onPressed: () async {
+            if (_currentIndex == 1) {
               Navigator.pushNamed(context, '/transactionDataPage');
             } else {
               Navigator.pushNamed(context, '/accountDataPage');
@@ -58,8 +62,9 @@ class _HomePageState extends State<HomePage> {
       ) : null,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        backgroundColor: Color.fromRGBO(38, 41, 59, 1.0),
-        unselectedItemColor: Colors.grey[350],
+        backgroundColor: Color.fromRGBO(251, 251, 251, 1),
+        unselectedItemColor: Colors.grey,
+        selectedItemColor: Color.fromRGBO(1, 58, 85, 1),
         type: BottomNavigationBarType.fixed,
         items: [
           BottomNavigationBarItem(

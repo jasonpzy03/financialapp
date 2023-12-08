@@ -24,12 +24,17 @@ class _HomePageContentState extends State<HomePageContent> {
 
   late double inflow;
   late double outflow;
+  late double cashflow;
   late double assets;
   late double liabilities;
   late double total;
 
   late List<AccountData> accounts;
   late List<String> accountGroups;
+
+  String networth = "";
+  String cashflowString = "";
+  bool isHidden = false;
 
   @override
   void initState() {
@@ -61,9 +66,12 @@ class _HomePageContentState extends State<HomePageContent> {
     liabilities = (await BudgetExpenseDatabase.instance.getLiabilities())?[0]['Liabilities'] ?? 0;
     total = assets + liabilities;
 
+    cashflow = inflow - outflow;
+
     accounts = await BudgetExpenseDatabase.instance.readAllAccounts();
     accountGroups = await BudgetExpenseDatabase.instance.readAvailableGroups();
-
+    networth = "RM " + total.toStringAsFixed(2);
+    cashflowString = "RM " + cashflow.toStringAsFixed(2);
     setState(() => isLoading = false);
   }
 
@@ -140,158 +148,146 @@ class _HomePageContentState extends State<HomePageContent> {
 
   @override
   Widget build(BuildContext context) {
-    return isLoading ? Center(child: const CircularProgressIndicator()) : Column(
+    return isLoading ? Center(child: const CircularProgressIndicator()) : Stack(
+      children: [Container(
+        width: MediaQuery.of(context).size.width,
+        height: 250,
+        color: Color.fromRGBO(1, 58, 85, 1),
+      ),Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-              padding: EdgeInsets.only(top: 60.0, left: 30.0),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Home Summary",
-                        style: TextStyle(color: Colors.white, fontSize:30, fontWeight: FontWeight.bold)),
-                    SizedBox(
-                        height:20
-                    ),
-                    Text("Net Worth",
-                        style: TextStyle(color: Colors.white24, fontSize:15, fontWeight: FontWeight.bold)),
-                    SizedBox(
-                        height:10
-                    ),
-                    FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Container(
-                        child: Row(
-                          children: [
-                            Text("\$", style: TextStyle(color: Colors.white, fontSize:25, fontWeight: FontWeight.bold)),
-                            SizedBox(
-                                width:10
-                            ),
-                            Text(total.toStringAsFixed(2),
-                                style: TextStyle(color: Colors.white, fontSize:45, fontWeight: FontWeight.bold)),
-                          ],
-                        ),
-                      ),
-                    )
-                  ]
-              )
-          ),
-          SizedBox(
-              height:20
-          ),
-          Container(
-            padding: EdgeInsets.only(left: 30.0, right: 30.0),
+            padding: EdgeInsets.only(top: 60.0, left: 30.0, right: 30.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Transactions",
-                    style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(context, PageRouteBuilder(
-                      pageBuilder: (context, animation, secondaryAnimation) => HomePage(1),
-                      transitionDuration: Duration(seconds: 0),
-                    ));
-                  },
-                  child: Text("See more",
-                      style: TextStyle(color: Colors.white24, fontSize:15, fontWeight: FontWeight.bold)),
-                ),
+                Text("Home",
+                    style: TextStyle(color: Colors.white, fontSize:30, fontWeight: FontWeight.bold)),
+                IconButton(onPressed: (){
+                  Navigator.push(context, PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) => HomePage(3),
+                  transitionDuration: Duration(seconds: 0),
+                  ));
+                }, icon: Icon(Icons.menu, color: Colors.white,))
               ],
             ),
           ),
-          SizedBox(
-              height:10
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Container(
-                  padding: EdgeInsets.only(top: 20.0, bottom: 20.0, left: 20.0),
-                  width: MediaQuery.sizeOf(context).width * 0.35,
+          Padding(
+            padding: const EdgeInsets.only(top: 20.0, left: 15.0, right: 15.0),
+            child: Center(
+              child: Container(
+                  padding: EdgeInsets.only(top: 30.0, left: 40.0, right: 40.0),
+                  height: 220,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: Color.fromRGBO(49, 54, 69, 1),
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                      color: Colors.blueGrey.shade50,
+                      offset: Offset(0.0, 10.0),
+                      blurRadius: 5.0,
+                      ),
+                    ]
                   ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("Inflow",
-                          style: TextStyle(color: Colors.white24, fontSize:15, fontWeight: FontWeight.bold)),
-                      SizedBox(
-                          height:15
-                      ),
-                      Row(
-                        children: [
-                          FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Container(
-                              width: MediaQuery.sizeOf(context).width * 0.2,
-                              height: 20,
-                              child: Text("\$ " + inflow.toStringAsFixed(2),
-                                  style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
-                            ),
-                          ),
-                        ],
-                      )
-
-                    ],
-                  )
-              ),
-              Container(
-                  padding: EdgeInsets.only(top: 20.0, bottom: 20.0, left: 20.0),
-                  width: MediaQuery.sizeOf(context).width * 0.35,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: Color.fromRGBO(49, 54, 69, 1),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("Outflow",
-                          style: TextStyle(color: Colors.white24, fontSize:15, fontWeight: FontWeight.bold)),
-                      SizedBox(
-                          height:15
-                      ),
-                      Row(
-                        children: [
-                          Container(
-                            width: MediaQuery.sizeOf(context).width * 0.2,
-                            height: 20,
-                            child: FittedBox(
-                              alignment: Alignment.centerLeft,
-                              fit: BoxFit.scaleDown,
-                              child: Container(
-                                child: Text("\$ " + outflow.toStringAsFixed(2),
-                                    style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text("NET WORTH",
+                            style: TextStyle(color: Colors.black, fontSize:15, fontWeight: FontWeight.bold)),
+                        SizedBox(
+                            height:5
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: MediaQuery.sizeOf(context).width * 0.4,
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(networth,
+                                    style: TextStyle(color: Colors.black, fontSize:35, fontWeight: FontWeight.bold)),
                               ),
                             ),
+
+                            IconButton(icon: Icon(Icons.remove_red_eye_outlined, color: Color.fromRGBO(1, 58, 85, 1), size: 28), onPressed: () {
+                              setState(() {
+                                isHidden = !isHidden;
+                                if (isHidden) {
+                                  networth = "RM ****";
+                                  cashflowString = "RM ****";
+                                } else {
+                                  networth = "RM " + total.toStringAsFixed(2);
+                                  cashflowString = "RM " + cashflow.toStringAsFixed(2);
+                                }
+
+                              });
+                            },)
+                          ],
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(top: 5.0, bottom: 5.0, left: 15.0, right: 15.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: (cashflow < 0 ? Color.fromRGBO(250, 69, 110, 1) : Color.fromRGBO(4, 207, 164, 1)),
                           ),
-                        ],
-                      )
-                    ],
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(cashflowString,
+                                style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                        SizedBox(
+                            height: 15
+                        ),
+                        GestureDetector(
+                          onTap: () {
+
+                            Navigator.pushNamed(context,'/statisticsPage');
+                          },
+                          child: Container(
+                            width: MediaQuery.sizeOf(context).width * 0.7,
+                            padding: EdgeInsets.only(top: 10.0, bottom: 10.0, left: 15.0, right: 15.0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              color: Color.fromRGBO(246, 247, 252, 1),
+                            ),
+                            child: Column(
+                              children: [
+                                Icon(Icons.query_stats, color: Color.fromRGBO(1, 58, 85, 1),),
+                                SizedBox(
+                                  height: 5
+                                ),
+                                Text("Statistics",
+                                    style: TextStyle(color: Colors.grey, fontSize:15, fontWeight: FontWeight.bold)),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ]
                   )
               ),
-            ],
+            ),
           ),
           SizedBox(
-              height: 40
+            height: 30
           ),
           Container(
             padding: EdgeInsets.only(left: 30.0, right: 30.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Accounts",
-                    style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
+                Text("Your Accounts (" + accounts.length.toString() + ")",
+                    style: TextStyle(color: Colors.black, fontSize:18, fontWeight: FontWeight.bold)),
                 GestureDetector(
                   onTap: () {
-                      Navigator.push(context, PageRouteBuilder(
-                        pageBuilder: (context, animation, secondaryAnimation) => HomePage(2),
-                        transitionDuration: Duration(seconds: 0),
-                      ));
+                    Navigator.push(context, PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) => HomePage(2),
+                      transitionDuration: Duration(seconds: 0),
+                    ));
                   },
-                  child: Text("See more",
-                      style: TextStyle(color: Colors.white24, fontSize:15, fontWeight: FontWeight.bold)),
+                  child: Text("ADD NEW",
+                      style: TextStyle(color: Color.fromRGBO(1, 58, 85, 1), fontSize:15, fontWeight: FontWeight.bold)),
                 ),
               ],
             ),
@@ -313,9 +309,9 @@ class _HomePageContentState extends State<HomePageContent> {
                 width: MediaQuery.sizeOf(context).width * 0.48,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
-                  color: Colors.black,
+                  color: Colors.white,
                   border: Border.all(
-                    color: Colors.white24, // Border color
+                    color: Colors.grey, // Border color
                     width: 2, // Border width
                   ),
                 ),
@@ -325,7 +321,7 @@ class _HomePageContentState extends State<HomePageContent> {
                     child:
                     Text("+",
                         style: TextStyle(
-                            color: Colors.white24,
+                            color: Colors.grey,
                             fontSize:50,
                             fontWeight: FontWeight.bold)
                     )
@@ -333,7 +329,7 @@ class _HomePageContentState extends State<HomePageContent> {
               ),
             ),
           )
-        : Container(
+              : Container(
             padding: EdgeInsets.symmetric(horizontal: 30.0),
             height: 160,
             child: ListView.builder(
@@ -352,31 +348,8 @@ class _HomePageContentState extends State<HomePageContent> {
               physics: BouncingScrollPhysics(),
             ),
           ),
-          SizedBox(
-            height: 110
-          ),
-          Center(
-            child: GestureDetector(
-              onTap: () {
-
-                Navigator.pushNamed(context,'/statisticsPage');
-              },
-              child: Container(
-                padding: EdgeInsets.only(top: 10, bottom: 10, left: 25.0, right: 25.0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Colors.grey[800],
-                  border: Border.all(
-                    color: Colors.white10, // Border color
-                    width: 1.5, // Border width
-                  ),
-                ),
-                child: Text("View Statistics",
-                    style: TextStyle(color: Colors.white54, fontSize:20, fontWeight: FontWeight.bold)),
-              ),
-            ),
-          ),
         ],
+      ),]
     );
 
 

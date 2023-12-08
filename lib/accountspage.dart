@@ -3,8 +3,10 @@ import 'package:ui_practice_1/db/budgetexpense.dart';
 import 'package:ui_practice_1/editTransactionPage.dart';
 import 'package:ui_practice_1/model/transaction.dart';
 import '../transactionsBox.dart';
+import 'accountData.dart';
 import 'accountsBox.dart';
 import 'editAcountPage.dart';
+import 'homepage.dart';
 import 'model/account.dart';
 
 class AccountsPage extends StatefulWidget {
@@ -59,7 +61,7 @@ class _AccountsPageState extends State<AccountsPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(accountGroups[i],
-                  style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
+                  style: TextStyle(color: Colors.black, fontSize:18, fontWeight: FontWeight.bold)),
               // GestureDetector(
               //   onTap: () {
               //
@@ -126,121 +128,114 @@ class _AccountsPageState extends State<AccountsPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-              padding: EdgeInsets.only(top: 60.0, left: 30.0, right: 30.0),
               child:
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Accounts",
-                      style: TextStyle(color: Colors.white, fontSize:30, fontWeight: FontWeight.bold)),
-                  SizedBox(
-                      height: 20
+                  Container(
+                    padding: EdgeInsets.only(top: 60.0, left: 30.0, right: 30.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Accounts",
+                            style: TextStyle(color: Color.fromRGBO(1, 58, 85, 1), fontSize:30, fontWeight: FontWeight.bold)),
+                        IconButton(onPressed: (){
+                          Navigator.push(context, PageRouteBuilder(
+                            pageBuilder: (context, animation, secondaryAnimation) => HomePage(3),
+                            transitionDuration: Duration(seconds: 0),
+                          ));
+                        }, icon: Icon(Icons.menu, color: Color.fromRGBO(1, 58, 85, 1),))
+                      ],
+                    ),
                   ),
-                  Text("Net Worth",
-                      style: TextStyle(color: Colors.white24, fontSize:15, fontWeight: FontWeight.bold)),
                   SizedBox(
-                      height:10
+                      height:20
                   ),
-                  Row(
-                    children: [
-                      Text("\$", style: TextStyle(color: Colors.white, fontSize:25, fontWeight: FontWeight.bold)),
-                      SizedBox(
-                          width:10
-                      ),
-                      Container(
-                        width: MediaQuery.sizeOf(context).width * 0.7,
-                        height: 50,
-                        child: FittedBox(
-                          alignment: Alignment.centerLeft,
-                          fit: BoxFit.scaleDown,
-                          child: Text(total.toStringAsFixed(2),
-                              style: TextStyle(color: Colors.white, fontSize:45, fontWeight: FontWeight.bold)),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 30.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          children: [
+                            Text("Total",
+                                style: TextStyle(color: Colors.grey[800], fontSize:15, fontWeight: FontWeight.bold)),
+                            SizedBox(
+                                height: 5
+                            ),
+                            Container(
+                              width: 100,
+                              child: FittedBox(
+                                alignment: Alignment.center,
+                                fit: BoxFit.scaleDown,
+                                child: Text("RM " + total.toStringAsFixed(2),
+                                    style: TextStyle(color: Color.fromRGBO(1, 58, 85, 1), fontSize:15, fontWeight: FontWeight.bold)),
+
+                              ),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text("Assets",
+                                style: TextStyle(color: Colors.grey[800], fontSize:15, fontWeight: FontWeight.bold)),
+                            SizedBox(
+                                height: 5
+                            ),
+                            Container(
+                              width: 100,
+                              child: FittedBox(
+                                alignment: Alignment.center,
+                                fit: BoxFit.scaleDown,
+                                child: Text("RM " + assets.toStringAsFixed(2),
+                                    style: TextStyle(color: Color.fromRGBO(1, 58, 85, 1), fontSize:15, fontWeight: FontWeight.bold)),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Text("Liabilities",
+                                style: TextStyle(color: Colors.grey[800], fontSize:15, fontWeight: FontWeight.bold)),
+                            SizedBox(
+                                height: 5
+                            ),
+                            Container(
+                              width: 100,
+                              child: FittedBox(
+                                alignment: Alignment.center,
+                                fit: BoxFit.scaleDown,
+                                child: Text("RM " + liabilities.toStringAsFixed(2),
+                                    style: TextStyle(color: Color.fromRGBO(1, 58, 85, 1), fontSize:15, fontWeight: FontWeight.bold)),
+
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.zero,
+                    height: 15,
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+
+                          color: Colors.blueGrey.shade200, // Border color
+                          width: 1, // Bo// Border width
                         ),
                       ),
-                    ],
-                  )
+                    ),
+                  ),
                 ],
               )
-
           ),
           SizedBox(
               height: 15
           ),
-          Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Container(
-                    padding: EdgeInsets.only(top: 20.0, bottom: 20.0, left: 20.0),
-                    width: MediaQuery.sizeOf(context).width * 0.35,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color: Color.fromRGBO(49, 54, 69, 1),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Assets",
-                            style: TextStyle(color: Colors.white24, fontSize:15, fontWeight: FontWeight.bold)),
-                        SizedBox(
-                            height:15
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                              width: MediaQuery.sizeOf(context).width * 0.2,
-                              height: 20,
-                              child: FittedBox(
-                                alignment: Alignment.centerLeft,
-                                fit: BoxFit.scaleDown,
-                                child: Text("\$ " + assets.toStringAsFixed(2),
-                                    style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
-                              ),
-                            ),
-                          ],
-                        )
-
-                      ],
-                    )
-                ),
-                Container(
-                    padding: EdgeInsets.only(top: 20.0, bottom: 20.0, left: 20.0),
-                    width: MediaQuery.sizeOf(context).width * 0.35,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color: Color.fromRGBO(49, 54, 69, 1),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Liabilities",
-                            style: TextStyle(color: Colors.white24, fontSize:15, fontWeight: FontWeight.bold)),
-                        SizedBox(
-                            height:15
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                              width: MediaQuery.sizeOf(context).width * 0.2,
-                              height: 20,
-                              child: FittedBox(
-                                alignment: Alignment.centerLeft,
-                                fit: BoxFit.scaleDown,
-                                child: Text("\$ " + liabilities.toStringAsFixed(2),
-                                    style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
-                              ),
-                            ),
-                          ],
-                        )
-                      ],
-                    )
-                ),
-              ],
-            ),
-          SizedBox(
-              height: 20
-          ),
           accounts.isEmpty ? Expanded(child: Center(child: Text("No accounts",
-              style: TextStyle(color: Colors.white24, fontSize:18)),)) : Expanded(
+              style: TextStyle(color: Colors.grey, fontSize:18, fontWeight: FontWeight.bold)),)) : Expanded(
             child: ListView(
               physics: BouncingScrollPhysics(),
               children: [generateGroupLists()],

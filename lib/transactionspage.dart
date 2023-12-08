@@ -87,181 +87,174 @@ class _TransactionsPageState extends State<TransactionsPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          padding: EdgeInsets.only(top: 60.0, left: 30.0, right: 30.0),
+
             child:
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Transactions",
-                    style: TextStyle(color: Colors.white, fontSize:30, fontWeight: FontWeight.bold)),
-                SizedBox(
-                    height: 10
-                ),
-                Text("Cashflow",
-                    style: TextStyle(color: Colors.white24, fontSize:15, fontWeight: FontWeight.bold)),
-                SizedBox(
-                    height:10
+                Container(
+                  padding: EdgeInsets.only(top: 60.0, left: 30.0, right: 30.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("Transactions",
+                          style: TextStyle(color: Color.fromRGBO(1, 58, 85, 1), fontSize:30, fontWeight: FontWeight.bold)),
+                      IconButton(onPressed: (){
+                        Navigator.push(context, PageRouteBuilder(
+                          pageBuilder: (context, animation, secondaryAnimation) => HomePage(3),
+                          transitionDuration: Duration(seconds: 0),
+                        ));
+                      }, icon: Icon(Icons.menu, color: Color.fromRGBO(1, 58, 85, 1),))
+                    ],
+                  ),
                 ),
                 Container(
+                  padding: EdgeInsets.only(left: 10.0, right: 30.0),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("\$", style: TextStyle(color: Colors.white, fontSize:25, fontWeight: FontWeight.bold)),
-                      SizedBox(
-                          width:10
+                      Row(
+                        children : [
+                          IconButton(onPressed: () {
+                            setState(() {
+                              selectedMonth -=1;
+                              if (selectedMonth <= 0) {
+                                selectedMonth = 12;
+                                selectedYear -= 1;
+                              }
+
+                              refreshTransactions();
+                            });
+
+                          }, icon: Icon(Icons.keyboard_arrow_left_sharp, color: Color.fromRGBO(1, 58, 85, 1), size: 30,)),
+                          Text(monthIntToString(selectedMonth) + " " + selectedYear.toString(),
+                            style: TextStyle(color: Color.fromRGBO(1, 58, 85, 1), fontSize:25, fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
+                          IconButton(onPressed: () {
+                            setState(() {
+                              selectedMonth +=1;
+                              if (selectedMonth > 12) {
+                                selectedMonth = 1;
+                                selectedYear += 1;
+                              }
+
+                              refreshTransactions();
+                            });
+                          }, icon: Icon(Icons.keyboard_arrow_right_sharp, color: Color.fromRGBO(1, 58, 85, 1), size: 30,)),
+                        ]
                       ),
-                      Container(
-                        width: MediaQuery.sizeOf(context).width * 0.7,
-                        height: 50,
-                        child: FittedBox(
-                          alignment: Alignment.centerLeft,
-                          fit: BoxFit.scaleDown,
-                          child: Container(
-                            child: Text(cashflow.toStringAsFixed(2),
-                                style: TextStyle(color: Colors.white, fontSize:45, fontWeight: FontWeight.bold)),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context,'/budgetsPage');
+                        },
+                        child: Container(
+                          padding: EdgeInsets.only(top: 10, bottom: 10, left: 25.0, right: 25.0),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.blueGrey.shade50,
+
+                                  blurRadius: 5.0,
+                                ),
+                              ]
                           ),
+                          child: Text("Budgets",
+                              style: TextStyle(color: Color.fromRGBO(1, 58, 85, 1), fontSize:15, fontWeight: FontWeight.bold)),
                         ),
                       ),
                     ],
                   ),
-                )
-              ],
-            )
-
-        ),
-        SizedBox(
-            height: 15
-        ),
-        Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Container(
-                  padding: EdgeInsets.only(top: 20.0, bottom: 20.0, left: 20.0),
-                  width: MediaQuery.sizeOf(context).width * 0.35,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: Color.fromRGBO(49, 54, 69, 1),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                ),
+                SizedBox(
+                    height:20
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 30.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("Inflow",
-                          style: TextStyle(color: Colors.white24, fontSize:15, fontWeight: FontWeight.bold)),
-                      SizedBox(
-                          height:15
-                      ),
-                      Row(
+                      Column(
                         children: [
-                          FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Container(
-                              width: MediaQuery.sizeOf(context).width * 0.2,
-                              height: 20,
-                              child: Text("\$ " + inflow.toStringAsFixed(2),
-                                  style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
-                            ),
+                          Text("Cashflow",
+                              style: TextStyle(color: Colors.grey[800], fontSize:15, fontWeight: FontWeight.bold)),
+                          SizedBox(
+                              height: 5
                           ),
-                        ],
-                      )
-
-                    ],
-                  )
-              ),
-              Container(
-                  padding: EdgeInsets.only(top: 20.0, bottom: 20.0, left: 20.0),
-                  width: MediaQuery.sizeOf(context).width * 0.35,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: Color.fromRGBO(49, 54, 69, 1),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("Outflow",
-                          style: TextStyle(color: Colors.white24, fontSize:15, fontWeight: FontWeight.bold)),
-                      SizedBox(
-                          height:15
-                      ),
-                      Row(
-                        children: [
                           Container(
-                            width: MediaQuery.sizeOf(context).width * 0.2,
-                            height: 20,
+                            width: 100,
                             child: FittedBox(
-                              alignment: Alignment.centerLeft,
+                              alignment: Alignment.center,
                               fit: BoxFit.scaleDown,
-                              child: Container(
-                                child: Text("\$ " + outflow.toStringAsFixed(2),
-                                    style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
-                              ),
+                              child: Text("RM " + cashflow.toStringAsFixed(2),
+                                    style: TextStyle(color: Color.fromRGBO(1, 58, 85, 1), fontSize:15, fontWeight: FontWeight.bold)),
+
                             ),
                           ),
                         ],
-                      )
+                      ),
+                      Column(
+                        children: [
+                          Text("Inflow",
+                              style: TextStyle(color: Colors.grey[800], fontSize:15, fontWeight: FontWeight.bold)),
+                          SizedBox(
+                              height: 5
+                          ),
+                          Container(
+                            width: 100,
+                            child: FittedBox(
+                              alignment: Alignment.center,
+                              fit: BoxFit.scaleDown,
+                              child: Text("RM " + inflow.toStringAsFixed(2),
+                                  style: TextStyle(color: Color.fromRGBO(1, 58, 85, 1), fontSize:15, fontWeight: FontWeight.bold)),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Text("Outflow",
+                              style: TextStyle(color: Colors.grey[800], fontSize:15, fontWeight: FontWeight.bold)),
+                          SizedBox(
+                            height: 5
+                          ),
+                          Container(
+                            width: 100,
+                            child: FittedBox(
+                              alignment: Alignment.center,
+                              fit: BoxFit.scaleDown,
+                              child: Text("RM " + outflow.toStringAsFixed(2),
+                                    style: TextStyle(color: Color.fromRGBO(1, 58, 85, 1), fontSize:15, fontWeight: FontWeight.bold)),
+
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
-                  )
-              ),
-            ],
-          ),
-        SizedBox(
-          height: 20
-        ),
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 30.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(onPressed: () {
-                setState(() {
-                  selectedMonth -=1;
-                  if (selectedMonth <= 0) {
-                    selectedMonth = 12;
-                    selectedYear -= 1;
-                  }
-
-                  refreshTransactions();
-                });
-
-              }, icon: Icon(Icons.keyboard_arrow_left_sharp, color: Colors.white, size: 20,)),
-              Text(monthIntToString(selectedMonth) + " " + selectedYear.toString(),
-                style: TextStyle(color: Colors.white, fontSize:25, fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
-              IconButton(onPressed: () {
-                setState(() {
-                  selectedMonth +=1;
-                  if (selectedMonth > 12) {
-                    selectedMonth = 1;
-                    selectedYear += 1;
-                  }
-
-                  refreshTransactions();
-                });
-              }, icon: Icon(Icons.keyboard_arrow_right_sharp, color: Colors.white, size: 20,)),
-              GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(context,'/budgetsPage');
-                },
-                child: Container(
-                  padding: EdgeInsets.only(top: 10, bottom: 10, left: 25.0, right: 25.0),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.zero,
+                  height: 15,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: Colors.grey[800],
-                    border: Border.all(
-                      color: Colors.white10, // Border color
-                      width: 1.5, // Border width
+                    border: Border(
+                      bottom: BorderSide(
+
+                        color: Colors.blueGrey.shade200, // Border color
+                        width: 1, // Bo// Border width
+                      ),
                     ),
                   ),
-                  child: Text("Budgets",
-                      style: TextStyle(color: Colors.white54, fontSize:15, fontWeight: FontWeight.bold)),
                 ),
-              ),
-            ],
-          ),
+              ],
+            )
         ),
 
         SizedBox(
             height: 20
         ),
         transactions.isEmpty ? Expanded(child: Center(child: Text("No transactions",
-            style: TextStyle(color: Colors.white24, fontSize:18)),)) : Expanded(
+            style: TextStyle(color: Colors.grey, fontSize:18, fontWeight: FontWeight.bold)),)) : Expanded(
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 20.0),
             child: ListView.builder(

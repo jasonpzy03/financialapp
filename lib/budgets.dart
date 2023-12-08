@@ -107,7 +107,7 @@ class _BudgetsPageState extends State<BudgetsPage> {
   Widget build(BuildContext context) {
     return isLoading ? Center(child: const CircularProgressIndicator()) : Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Color.fromRGBO(35, 38, 51, 1.0),
+      backgroundColor: Color.fromRGBO(246, 247, 252, 1),
       body: Column(
           children: [
             Container(
@@ -118,16 +118,16 @@ class _BudgetsPageState extends State<BudgetsPage> {
                   Row(
                     children: [
                       IconButton(
-                          icon: Icon(Icons.arrow_back, color: Colors.white, size: 30),
+                          icon: Icon(Icons.arrow_back, color: Color.fromRGBO(1, 58, 85, 1), size: 30),
                           onPressed: () {
-                            Navigator.pop(context);
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage(1)));
                           }
                       ),
                       SizedBox(
                           width: 10
                       ),
                       Text("Budgets",
-                          style: TextStyle(color: Colors.white, fontSize:30, fontWeight: FontWeight.bold)),
+                          style: TextStyle(color: Color.fromRGBO(1, 58, 85, 1), fontSize:30, fontWeight: FontWeight.bold)),
                     ],
                   ),
 
@@ -138,7 +138,7 @@ class _BudgetsPageState extends State<BudgetsPage> {
                           builder: (context) => AddBudgetPage("", ""),
                         ));
                       });
-                    }, icon: Icon(Icons.add_alert, color: Colors.white,)),
+                    }, icon: Icon(Icons.add_alert, color: Color.fromRGBO(1, 58, 85, 1),)),
                   )
                 ],
               ),
@@ -161,9 +161,9 @@ class _BudgetsPageState extends State<BudgetsPage> {
                       getBudgets();
                     });
 
-                  }, icon: Icon(Icons.keyboard_arrow_left_sharp, color: Colors.white, size: 20,)),
+                  }, icon: Icon(Icons.keyboard_arrow_left_sharp, color: Color.fromRGBO(1, 58, 85, 1), size: 30,)),
                   Text(monthIntToString(selectedMonth) + " " + selectedYear.toString(),
-                    style: TextStyle(color: Colors.white, fontSize:25, fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
+                    style: TextStyle(color: Color.fromRGBO(1, 58, 85, 1), fontSize:25, fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
                   IconButton(onPressed: () {
                     setState(() {
                       selectedMonth +=1;
@@ -174,7 +174,7 @@ class _BudgetsPageState extends State<BudgetsPage> {
 
                       getBudgets();
                     });
-                  }, icon: Icon(Icons.keyboard_arrow_right_sharp, color: Colors.white, size: 20,)),
+                  }, icon: Icon(Icons.keyboard_arrow_right_sharp, color: Color.fromRGBO(1, 58, 85, 1), size: 30,)),
                 ],
               ),
             ),
@@ -200,13 +200,16 @@ class _BudgetsPageState extends State<BudgetsPage> {
                         child: Container(
                             padding: EdgeInsets.all(20.0),
                             decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15),
-                                color: Color.fromRGBO(49, 54, 69, 1),
+                                borderRadius: BorderRadius.circular(10),
+                                color: Colors.white,
                                 boxShadow: [
                                   BoxShadow(
-                                      color: Colors.grey.shade900,
-                                      blurRadius: 5.0),
-                                ]),
+                                    color: Colors.blueGrey.shade50,
+
+                                    blurRadius: 5.0,
+                                  ),
+                                ]
+                            ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -216,13 +219,19 @@ class _BudgetsPageState extends State<BudgetsPage> {
                                   Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text(budgets[index].key,
-                                          style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
+                                      FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: Text(budgets[index].key,
+                                            style: TextStyle(color: Colors.black, fontSize:15, fontWeight: FontWeight.bold)),
+                                      ),
                                       SizedBox(
                                           height: 10
                                       ),
-                                      Text("\$ " + (budgets[index].value ?? "0"),
-                                          style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
+                                      FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: Text("RM " + (budgets[index].value ?? "0"),
+                                            style: TextStyle(color: Colors.black, fontSize:15, fontWeight: FontWeight.bold)),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -238,8 +247,8 @@ class _BudgetsPageState extends State<BudgetsPage> {
                                           value: (totalExpense[index].value / double.parse(budgets[index].value ?? "0")),
                                           minHeight: 25,
                                           borderRadius: BorderRadius.circular(15),
-                                          backgroundColor: Colors.black,
-                                          valueColor: ((totalExpense[index].value / double.parse(budgets[index].value ?? "0")) >= 1 ? AlwaysStoppedAnimation<Color>(Colors.red.shade300) : AlwaysStoppedAnimation<Color>(Colors.blue)),
+                                          backgroundColor: Color.fromRGBO(246, 247, 252, 1),
+                                          valueColor: ((totalExpense[index].value / double.parse(budgets[index].value ?? "0")) >= 1 ? AlwaysStoppedAnimation<Color>(Color.fromRGBO(250, 69, 110, 1)) : AlwaysStoppedAnimation<Color>(Color.fromRGBO(4, 207, 164, 1))),
                                         ),
                                         Row(
                                           mainAxisAlignment: MainAxisAlignment.end,
@@ -247,7 +256,7 @@ class _BudgetsPageState extends State<BudgetsPage> {
                                             Container(
                                               width: 100,
                                               child: Text(((totalExpense[index].value / double.parse(budgets[index].value ?? "0")) * 100).toStringAsFixed(2) + "%"
-                                                    ,style: TextStyle(color: Colors.white, fontSize:15), textAlign: TextAlign.right,),
+                                                    ,style: TextStyle(color: Colors.black, fontSize:15), textAlign: TextAlign.right,),
                                             ),
                                             SizedBox(
                                                 width:20
@@ -263,10 +272,22 @@ class _BudgetsPageState extends State<BudgetsPage> {
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text("\$ " + (totalExpense[index].value).toStringAsFixed(2)
-                                                ,style: TextStyle(color: Colors.white, fontSize:15)),
-                                          Text(((double.parse(budgets[index].value ?? "0") - totalExpense[index].value) < 0 ? "Excess " : "") + "\$ " + (double.parse(budgets[index].value ?? "0") - totalExpense[index].value).toStringAsFixed(2),
-                                          style: TextStyle(color: Colors.white, fontSize:15)),
+                                          Container(
+                                            width: 100,
+                                            child: FittedBox(
+                                              fit: BoxFit.scaleDown,
+                                              child: Text("RM " + (totalExpense[index].value).toStringAsFixed(2)
+                                                    ,style: TextStyle(color: Colors.black, fontSize:15)),
+                                            ),
+                                          ),
+                                          Container(
+                                            width: 100,
+                                            child: FittedBox(
+                                              fit: BoxFit.scaleDown,
+                                              child: Text(((double.parse(budgets[index].value ?? "0") - totalExpense[index].value) < 0 ? "Excess " : "") + "\$ " + (double.parse(budgets[index].value ?? "0") - totalExpense[index].value).toStringAsFixed(2),
+                                              style: TextStyle(color: Colors.black, fontSize:15)),
+                                            ),
+                                          ),
                                         ],
                                       )
                                     ],

@@ -25,8 +25,15 @@ class AccountBox extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 25.0),
           width: MediaQuery.sizeOf(context).width * 0.48,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            color: amount < 0 ? Colors.red.shade300 : Colors.blue,
+              borderRadius: BorderRadius.circular(10),
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.blueGrey.shade50,
+                  offset: Offset(0.0, 10.0),
+                  blurRadius: 5.0,
+                ),
+              ]
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,27 +44,24 @@ class AccountBox extends StatelessWidget {
               FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(name,
-                    style: TextStyle(color: Colors.white, fontSize:25, fontWeight: FontWeight.bold)),
+                    style: TextStyle(color: Color.fromRGBO(1, 58, 85, 1), fontSize:25, fontWeight: FontWeight.bold)),
               ),
               SizedBox(
                   height:15
               ),
               Text("Total Balance: ",
-                  style: TextStyle(color: Colors.white, fontSize:20, fontWeight: FontWeight.bold)),
+                  style: TextStyle(color: Colors.black, fontSize:20, fontWeight: FontWeight.bold)),
               SizedBox(
                   height:20
               ),
               FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Container(
-                  child: Row(
-                    children: [
-                      Text("\$ ",
-                          style: TextStyle(color: Colors.white, fontSize:15, fontWeight: FontWeight.bold)),
-                      Text(amount.toStringAsFixed(2),
-                          style: TextStyle(color: Colors.white, fontSize:20, fontWeight: FontWeight.bold)),
-                    ],
-                  ),
+                  child:
+                      Text("RM " + amount.toStringAsFixed(2),
+                          style: TextStyle(color: amount < 0 ? Color.fromRGBO(250, 69, 110, 1) : Color.fromRGBO(4, 207, 164, 1), fontSize:20, fontWeight: FontWeight.bold)),
+
+
                 ),
               ),
             ],
