@@ -1,6 +1,7 @@
-# ui_practice_1
+# WealthWise Budget & Expense Tracker
 
-First UI Practice
+WealthWise's Airost Project:
+Budget & Expense Tracker
 
 ## Getting Started
 
